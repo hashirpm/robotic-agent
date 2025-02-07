@@ -4,7 +4,7 @@ import { Cookie } from "tough-cookie"; // Add this import
 import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
-import { log } from "console";
+
 
 dotenv.config();
 
@@ -351,14 +351,14 @@ export const getTweetsOfAnAccount = async (username: string) => {
   const userTweets = await scraper.getTweets(username, 10);
   // console.log({ userTweets });
 
-  const responseTweets:any = [];
+  const responseTweets: any = [];
 
   // Since userTweets is an AsyncGenerator, we need to iterate through it properly
   for await (const tweet of userTweets) {
     // Check if tweet and legacy exist
     if (tweet) {
       // console.log({ tweet });
-      responseTweets.push(tweet)
+      responseTweets.push(tweet);
     }
   }
 

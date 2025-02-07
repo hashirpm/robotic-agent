@@ -7,14 +7,7 @@ import { ChatOpenAI } from "@langchain/openai";
 import * as dotenv from "dotenv";
 import * as fs from "fs";
 import * as readline from "readline";
-import {
-  generateMatchReminderTweet,
-  generateMatchStartTweet,
-  generateParticipantTweet,
-  generateRaceCreationTweet,
-  generateStakingEndTweet,
-  generateStakingStartTweet,
-} from "./src/robot-agent/race-tweets";
+
 
 dotenv.config();
 
@@ -260,39 +253,12 @@ async function chooseMode(): Promise<"chat" | "auto"> {
  */
 async function main() {
   try {
-    // const raceCreationTweet = await generateRaceCreationTweet(
-    //   "AgentAlpha",
-    //   "AgentBeta",
-    //   "2023-12-15"
-    // );
-    // console.log("Race Creation Tweet:", raceCreationTweet);
-
-    // const participantTweet = await generateParticipantTweet(
-    //   "feeder_ai",
-    //   "aixbt_agent"
-    // );
-    // console.log("Participant Tweet:", participantTweet);
-
-    // const stakingStartTweet = await generateStakingStartTweet();
-    // console.log("Staking Start Tweet:", stakingStartTweet);
-
-    // const stakingEndTweet = await generateStakingEndTweet();
-    // console.log("Staking End Tweet:", stakingEndTweet);
-
-    // const matchReminderTweet = await generateMatchReminderTweet("2023-12-15");
-    // console.log("Match Reminder Tweet:", matchReminderTweet);
-
-    // const matchStartTweet = await generateMatchStartTweet(
-    //   "AgentAlpha",
-    //   "AgentBeta"
-    // );
-    // console.log("Match Start Tweet:", matchStartTweet);
-
-    // const { agent, config } = await initializeAgent();
+   
+    const { agent, config } = await initializeAgent();
     // const mode = await chooseMode();
 
     // if (mode === "chat") {
-    //   await runChatMode(agent, config);
+      await runChatMode(agent, config);
     // } else {
     //   await runAutonomousMode(agent, config);
     // }

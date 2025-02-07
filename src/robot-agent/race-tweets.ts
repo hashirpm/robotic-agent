@@ -3,7 +3,7 @@ import { Profile } from "agent-twitter-client";
 import {
   getProfileOfAnAccount,
   getTweetsOfAnAccount,
-} from "../../twitter-scraper";
+} from "../scrapers/twitter";
 
 // Initialize LLM for tweet generation
 const llm = new ChatOpenAI({

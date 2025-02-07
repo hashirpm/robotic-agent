@@ -3,7 +3,7 @@ import { Profile } from "agent-twitter-client";
 import {
   getProfileOfAnAccount,
   getTweetsOfAnAccount,
-} from "../../twitter-scraper";
+} from "../scrapers/twitter";
 
 /**
  * Analyze Twitter profile and content using AI
