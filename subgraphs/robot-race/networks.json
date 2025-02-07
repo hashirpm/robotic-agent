@@ -1,0 +1,8 @@
+{
+  "base-sepolia": {
+    "RobotRaceManager": {
+      "address": "0xAE67A96Ce028A6965dDE4F8b2c7D13894Bb6c56d",
+      "startBlock": 21581240
+    }
+  }
+}

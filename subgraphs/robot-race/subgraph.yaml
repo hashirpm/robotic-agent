@@ -1,0 +1,39 @@
+specVersion: 1.0.0
+indexerHints:
+  prune: auto
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: RobotRaceManager
+    network: base-sepolia
+    source:
+      address: "0xAE67A96Ce028A6965dDE4F8b2c7D13894Bb6c56d"
+      abi: RobotRaceManager
+      startBlock: 21581240
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Robot
+        - Race
+        - Stake
+        - Trap
+      abis:
+        - name: RobotRaceManager
+          file: ./abis/RobotRaceManager.json
+      eventHandlers:
+        - event: RobotRegistered(indexed address,uint256)
+          handler: handleRobotRegistered
+        - event: MinimumStakeUpdated(indexed address,uint256)
+          handler: handleMinimumStakeUpdated
+        - event: StakeAdded(indexed address,indexed address,uint256)
+          handler: handleStakeAdded
+        - event: TrapPurchased(indexed address,uint256,uint256)
+          handler: handleTrapPurchased
+        - event: RaceCreated(indexed uint256,address,address,uint256,uint256)
+          handler: handleRaceCreated
+        - event: RaceCompleted(indexed uint256,address,uint256,uint256)
+          handler: handleRaceCompleted
+      file: ./src/mapping.ts

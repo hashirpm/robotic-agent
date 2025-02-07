@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Robot Action Logs",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "_id": {
+        "type": "string",
+        "format": "uuid",
+        "coerce": true
+      },
+      "robotId": {
+        "type": "string"
+      },
+      "timestamp": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "actionType": {
+        "type": "string",
+        "enum": ["RACE", "STAKE", "UPGRADE", "TWEET", "ABILITY_USE"]
+      },
+      "publicData": {
+        "type": "object"
+      },
+      "sensitiveData": {
+        "type": "object",
+        "properties": {
+          "$share": { "type": "string" }
+        },
+        "required": ["$share"]
+      }
+    },
+    "required": ["_id", "robotId", "timestamp", "actionType", "publicData"]
+  }
+}

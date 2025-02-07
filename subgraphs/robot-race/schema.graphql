@@ -1,0 +1,52 @@
+type Robot @entity {
+  id: ID! # robot address
+  totalStake: BigInt!
+  minimumStake: BigInt!
+  stakers: [Staker!]! @derivedFrom(field: "robot")
+  basename: String
+  twitter: String
+  tokenName: String
+  tokenAddress: String
+  level: BigInt
+  racesAsRobot1: [Race!]! @derivedFrom(field: "robot1")
+  racesAsRobot2: [Race!]! @derivedFrom(field: "robot2")
+  wonRaces: [Race!]! @derivedFrom(field: "winner")
+}
+
+type Race @entity {
+  id: ID! # race counter
+  robot1: Robot!
+  robot2: Robot!
+  isActive: Boolean!
+  isCompleted: Boolean!
+  winner: Robot
+  totalPrizePool: BigInt!
+  raceTime: BigInt!
+  stakingEndTime: BigInt!
+  traps: [Trap!]! @derivedFrom(field: "race")
+  stakes: [Stake!]! @derivedFrom(field: "race")
+}
+
+type Staker @entity {
+  id: ID! # staker address
+  stakes: [Stake!]! @derivedFrom(field: "staker")
+  robot: Robot!
+  totalStaked: BigInt!
+}
+
+type Stake @entity {
+  id: ID! # race id + robot address + staker address
+  race: Race!
+  robot: Robot!
+  staker: Staker!
+  amount: BigInt!
+  timestamp: BigInt!
+}
+
+type Trap @entity {
+  id: ID! # race id + buyer address + timestamp
+  race: Race!
+  buyer: String!
+  amount: BigInt!
+  timestamp: BigInt!
+}
