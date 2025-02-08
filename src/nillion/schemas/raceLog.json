@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Race Activity Logs",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "_id": {
+        "type": "string",
+        "format": "uuid",
+        "coerce": true
+      },
+      "raceId": {
+        "type": "string"
+      },
+      "timestamp": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "publicData": {
+        "type": "object"
+      },
+      "sensitiveData": {
+        "type": "object",
+        "properties": {
+          "$share": { "type": "string" }
+        },
+        "required": ["$share"]
+      }
+    },
+    "required": ["_id", "raceId", "timestamp", "publicData"]
+  }
+}

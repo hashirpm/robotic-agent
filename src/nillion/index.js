@@ -360,11 +360,7 @@ app.post("/robotLog", async (req, res) => {
 
 app.post("/robotInitialLog", async (req, res) => {
   try {
-    let {
-      raceId,
-      robot1Id,
-      robot2Id,
-    } = req.body;
+    let { raceId, robot1Id, robot2Id } = req.body;
     res.json({
       success: true,
       data: {
@@ -382,6 +378,92 @@ app.post("/robotInitialLog", async (req, res) => {
           position: 0,
         },
       },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post("/raceLog", extractOrgCredentials, async (req, res) => {
+  try {
+    let {
+      raceId,
+      robot1Id,
+      robot2Id,
+      robot1Energy,
+      robot2Energy,
+      robot1Position,
+      robot2Position,
+      robot1Speed,
+      robot2Speed,
+    } = req.body;
+    const collection = initCollection(
+      req.orgCredentials,
+      "7d455593-eab3-4ba9-bd1a-b74d06a87469"
+    );
+    const publicData = { robot1Id, robot2Id };
+    const sensitiveData = {
+      robot1Energy,
+      robot2Energy,
+      robot1Position,
+      robot2Position,
+      robot1Speed,
+      robot2Speed,
+    };
+    await collection.init();
+
+    const data = [
+      {
+        raceId,
+        timestamp: new Date().toISOString(),
+        publicData,
+        sensitiveData: { $allot: JSON.stringify(sensitiveData) },
+      },
+    ];
+    console.log(data);
+    const result = await collection.writeToNodes(data);
+    console.log(result);
+    res.json({
+      success: true,
+      data: {
+        raceId,
+        robot1: {
+          id: robot1Id,
+          speed: robot1Speed,
+          energy: robot1Energy,
+          position: robot1Position,
+        },
+        robot2: {
+          id: robot2Id,
+          speed: robot2Speed,
+          energy: robot2Energy,
+          position: robot2Position,
+        },
+      },
+    });
+    // res.json({ success: true, data: result });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+app.post("/getLatestRaceLog", extractOrgCredentials, async (req, res) => {
+  try {
+    let { raceId } = req.body;
+    const collection = initCollection(
+      req.orgCredentials,
+      "7d455593-eab3-4ba9-bd1a-b74d06a87469"
+    );
+    await collection.init();
+    const decryptedData = await collection.readFromNodes({ raceId: raceId });
+    const serializedData = JSON.parse(
+      JSON.stringify(decryptedData, (_, value) =>
+        typeof value === "bigint" ? value.toString() : value
+      )
+    );
+    console.log(serializedData);
+    res.json({
+      success: true,
+      data: serializedData[0],
     });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
