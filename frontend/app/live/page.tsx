@@ -10,6 +10,7 @@ import { wagmiConfig } from "@/providers/WagmiProviderWrapper";
 import { getLiveRaceData } from "@/services/race";
 import { Race } from "../races/page";
 import { forma } from "wagmi/chains";
+import { useRouter } from "next/navigation";
 
 interface RobotStats {
   speed: number;
@@ -27,6 +28,7 @@ interface TrapType {
 }
 
 export default function LiveRacePage() {
+  const router = useRouter();
   const { address } = useAccount();
   const [races, setRaces] = useState<Race>();
   const [robot1Stats, setRobot1Stats] = useState<RobotStats>({
@@ -118,15 +120,12 @@ export default function LiveRacePage() {
     }
   };
 
-  // Update stats using API every second
-  useEffect(() => {
-    const interval = setInterval(updateRobotStats, 1000);
-    return () => clearInterval(interval);
-  }, [races, robot1Stats, robot2Stats]);
-
   useEffect(() => {
     const fetchData = async () => {
       const race = await getLiveRaceData();
+      if (race===null) {
+        router.push("/no-race");
+      }
       const formattedRace = {
         id: race.id,
         robot1: {
@@ -196,6 +195,12 @@ export default function LiveRacePage() {
     fetchData();
     fetchStats();
   }, []);
+  // Update stats using API every second
+  useEffect(() => {
+    const interval = setInterval(updateRobotStats, 1000);
+    return () => clearInterval(interval);
+  }, [races, robot1Stats, robot2Stats]);
+
   const handleBuyTrap = (raceId: number, amount: number, robot: string) => {
     if (!address) {
       alert("Please connect your wallet first.");

@@ -149,6 +149,11 @@ export async function getLiveRaceData() {
 
   let apiResponse = await axios.post(GRAPH_NETWORK_QUERY_URL, { query });
   console.log("Data from the graph");
-  console.log(apiResponse.data.data.races[0]);
+  if (apiResponse.data.data) {
+    console.log(apiResponse.data.data.races[0]);
+  } else {
+    return null;
+  }
+
   return apiResponse.data.data.races[0];
 }
