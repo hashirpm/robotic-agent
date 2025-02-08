@@ -13,7 +13,7 @@ import { formatDistanceToNow } from "date-fns";
 import { getUpcomingRaceData } from "@/services/race";
 import { WalletComponents } from "@/components/ui/wallet";
 import { useAccount, useWriteContract } from "wagmi";
-import { RaceManagerABI, RaceManagerContractAddress } from "@/abis/RaceManager";
+import { RaceManagerABI } from "@/abis/RaceManager";
 import { wagmiConfig } from "@/providers/WagmiProviderWrapper";
 import { writeContract } from "@wagmi/core";
 export interface RobotData {
@@ -85,11 +85,11 @@ export default function RacesPage() {
       return;
     }
     console.log("Staking", robot, amount);
- 
-    console.log(RaceManagerContractAddress)
+    console.log(process.env.NEXT_PUBLIC_RACEMANAGER_CONTRACT_ADDRESS);
     writeContract(wagmiConfig, {
       abi: RaceManagerABI,
-      address: RaceManagerContractAddress,
+      address: process.env
+        .NEXT_PUBLIC_RACEMANAGER_CONTRACT_ADDRESS as `0x${string}`,
       functionName: "addStake",
       args: [robot, amount],
     });

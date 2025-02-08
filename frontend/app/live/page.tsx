@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Battery, Bot, Gauge, Shield, Zap } from "lucide-react";
 import { WalletComponents } from "@/components/ui/wallet";
 import { useAccount } from "wagmi";
-import { RaceManagerABI, RaceManagerContractAddress } from "@/abis/RaceManager";
+import { RaceManagerABI } from "@/abis/RaceManager";
 import { writeContract } from "@wagmi/core";
 import { wagmiConfig } from "@/providers/WagmiProviderWrapper";
 import { getLiveRaceData } from "@/services/race";
@@ -75,23 +75,26 @@ export default function LiveRacePage() {
     if (robot1Stats.energy <= 0 && robot2Stats.energy <= 0) return;
 
     try {
-      const response = await fetch("http://localhost:3001/robotLog", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          raceId: races.id,
-          robot1Id: races.robot1.id,
-          robot2Id: races.robot2.id,
-          robot1Energy: robot1Stats.energy,
-          robot2Energy: robot2Stats.energy,
-          robot1Position: robot1Stats.position,
-          robot2Position: robot2Stats.position,
-          robot1Speed: robot1Stats.speed,
-          robot2Speed: robot2Stats.speed,
-        }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_NILLION_API_BASE_URL}/robotLog`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            raceId: races.id,
+            robot1Id: races.robot1.id,
+            robot2Id: races.robot2.id,
+            robot1Energy: robot1Stats.energy,
+            robot2Energy: robot2Stats.energy,
+            robot1Position: robot1Stats.position,
+            robot2Position: robot2Stats.position,
+            robot1Speed: robot1Stats.speed,
+            robot2Speed: robot2Stats.speed,
+          }),
+        }
+      );
 
       const data = await response.json();
       console.log(data.data);
@@ -158,17 +161,20 @@ export default function LiveRacePage() {
     };
     const fetchStats = async () => {
       // Fetch robot initial stats from the server
-      const response = await fetch("http://localhost:3001/robotInitialLog", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          raceId: races?.id,
-          robot1Id: races?.robot1?.id || "0x0000...0000",
-          robot2Id: races?.robot2?.id || "0x0000...0000",
-        }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_NILLION_API_BASE_URL}/robotInitialLog`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            raceId: races?.id,
+            robot1Id: races?.robot1?.id || "0x0000...0000",
+            robot2Id: races?.robot2?.id || "0x0000...0000",
+          }),
+        }
+      );
 
       const data = await response.json();
       console.log("Initial Stats", data);
@@ -196,12 +202,13 @@ export default function LiveRacePage() {
       return;
     }
     console.log(raceId, amount, robot);
-    // writeContract(wagmiConfig, {
-    //   abi: RaceManagerABI,
-    //   address: RaceManagerContractAddress,
-    //   functionName: "buyTrap",
-    //   args: [raceId, robot, amount],
-    // });
+    writeContract(wagmiConfig, {
+      abi: RaceManagerABI,
+      address: process.env
+        .NEXT_PUBLIC_RACEMANAGER_CONTRACT_ADDRESS as `0x${string}`,
+      functionName: "buyTrap",
+      args: [raceId, robot, amount],
+    });
     //reduce the energy of the robot selected by the amount of the trap
     // Reduce energy based on selected trap drain percentage
     if (selectedTrap !== null) {

@@ -1,4 +1,3 @@
-export const RaceManagerContractAddress = "0xdCBd5adC1c11819f53e9f41B3a9bbEf0190E5CbF";
 
 export const RaceManagerABI = [
   {
