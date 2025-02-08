@@ -15,7 +15,7 @@ let lastStakeTimestamp: BigInt = BigInt(0);
 let lastRaceTimestamp: BigInt = BigInt(0);
 
 // Function to fetch new traps
-async function fetchNewTraps() {
+export async function fetchNewTraps() {
   try {
     const query = `
       query {
@@ -75,13 +75,13 @@ async function fetchNewTraps() {
 }
 
 // Function to fetch new stakes
-async function fetchNewStakes() {
+export async function fetchNewStakes() {
   try {
     const query = `
       query {
         stakes(
-          where: { timestamp_gt: "${lastStakeTimestamp}" },
-          orderBy: timestamp,
+          where: { raceTime_gt: "${lastStakeTimestamp}" },
+          orderBy: raceTime,
           orderDirection: asc,
           first: 100
         ) {
@@ -96,7 +96,6 @@ async function fetchNewStakes() {
             id
           }
           amount
-          timestamp
         }
       }
     `;
@@ -138,18 +137,16 @@ async function fetchNewStakes() {
 }
 
 // Function to fetch new races
-async function fetchNewRaces() {
+export async function fetchNewRaces() {
   try {
     const query = `
       query {
         races(
           where: { 
-            timestamp_gt: ${lastRaceTimestamp}, 
+            raceTime_gt: ${lastRaceTimestamp}, 
             isCompleted: false, 
-            isActive: true 
           },
-          orderBy: timestamp,
-          orderDirection: asc,
+          orderBy: raceTime,
           first: 100
         ) {
           id
@@ -164,14 +161,13 @@ async function fetchNewRaces() {
           totalPrizePool
           raceTime
           stakingEndTime
-          timestamp
         }
       }
     `;
 
     const apiResponse = await axios.post(GRAPH_NETWORK_QUERY_URL, { query });
     const races = apiResponse.data.data.races;
-
+    console.log(races);
     if (races.length > 0) {
       console.log("New Races:", races);
       lastRaceTimestamp = races[races.length - 1].timestamp; // Update last timestamp
@@ -180,7 +176,7 @@ async function fetchNewRaces() {
         const { id, robot1, robot2, totalPrizePool, raceTime, stakingEndTime } =
           race;
 
-        // Convert timestamps to Date objects
+        //     // Convert timestamps to Date objects
         const stakingEndDate = new Date(stakingEndTime * 1000);
         const raceStartDate = new Date(raceTime * 1000);
 
@@ -188,7 +184,7 @@ async function fetchNewRaces() {
           `Scheduling tweets for race ${id} between ${robot1.id} and ${robot2.id}`
         );
 
-        // Post race creation tweet immediately
+        //     // Post race creation tweet immediately
         await generateRaceCreationTweet(
           robot1.basename,
           robot2.basename,
@@ -229,19 +225,6 @@ async function fetchNewRaces() {
     console.error("Error fetching new races:", error);
   }
 }
-
-// Schedule the functions to run periodically
-const INTERVAL = 60000; // 1 minute in milliseconds
-
-setInterval(fetchNewTraps, INTERVAL);
-setInterval(fetchNewStakes, INTERVAL);
-setInterval(fetchNewRaces, INTERVAL);
-
-// Initial fetch
-fetchNewTraps();
-fetchNewStakes();
-fetchNewRaces();
-
 function scheduleTweet(
   eventDate: Date,
   offsetMs: number,
@@ -250,11 +233,35 @@ function scheduleTweet(
   const tweetTime = new Date(eventDate.getTime() + offsetMs);
   const timeUntilTweet = tweetTime.getTime() - Date.now();
 
+  // Check if the delay is too large
   if (timeUntilTweet > 0) {
-    console.log(`Tweet scheduled at ${tweetTime.toISOString()}`);
-    setTimeout(async () => {
-      await tweetFunction();
-    }, timeUntilTweet);
+    if (timeUntilTweet > 2_147_483_647) {
+      console.log(
+        `Delay too large for setTimeout, breaking into smaller intervals.`
+      );
+
+      // Split into smaller chunks, e.g., 2-hour intervals
+      const maxDelay = 2_147_483_647; // Max delay for setTimeout
+      let remainingTime = timeUntilTweet;
+
+      // Set intervals of maxDelay
+      while (remainingTime > maxDelay) {
+        setTimeout(async () => {
+          await tweetFunction();
+        }, maxDelay);
+        remainingTime -= maxDelay;
+      }
+
+      // Set the final smaller delay
+      setTimeout(async () => {
+        await tweetFunction();
+      }, remainingTime);
+    } else {
+      console.log(`Tweet scheduled at ${tweetTime.toISOString()}`);
+      setTimeout(async () => {
+        await tweetFunction();
+      }, timeUntilTweet);
+    }
   } else {
     console.log(
       `Skipped scheduling tweet, time already passed: ${tweetTime.toISOString()}`

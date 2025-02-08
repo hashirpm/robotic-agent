@@ -102,6 +102,7 @@ async function initializeAgent() {
       ),
       cdpWalletData: walletDataStr || undefined,
       networkId: process.env.NETWORK_ID || "base-sepolia",
+      mnemonicPhrase: process.env.CDP_WALLET_SEED,
     };
 
     const walletProvider = await CdpWalletProvider.configureWithWallet(config);
@@ -213,7 +214,7 @@ async function runChatMode(agent: any, config: any) {
 
   try {
     // while (true) {
-    const userInput = "Which is the latest block number";
+    const userInput = "What is your wallet public address of this agent";
     console.log({ userInput });
     const stream = await agent.stream(
       { messages: [new HumanMessage(userInput)] },

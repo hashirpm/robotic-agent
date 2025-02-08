@@ -21,7 +21,7 @@ import * as readline from "readline";
 
 dotenv.config();
 let llm: any;
-function validateEnvironment(): void {
+export function validateEnvironment(): void {
   const missingVars: string[] = [];
 
   // Check required variables
@@ -53,8 +53,7 @@ function validateEnvironment(): void {
   }
 }
 
-// Add this right after imports and before any other code
-validateEnvironment();
+
 
 // Configure a file to persist the agent's CDP MPC Wallet Data
 const WALLET_DATA_FILE = "wallet_data.txt";
@@ -126,7 +125,7 @@ export async function initializeAgent() {
     // Store buffered conversation history in memory
     const memory = new MemorySaver();
     const agentConfig = {
-      configurable: { thread_id: "CDP AgentKit Chatbot Example!" },
+      configurable: { thread_id: "ROBO RACE AI AGENT" },
     };
 
     // Create React Agent using the LLM and CDP AgentKit tools
