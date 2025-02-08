@@ -21,6 +21,8 @@ import * as readline from "readline";
 
 dotenv.config();
 let llm: any;
+let config: any;
+let agent: any;
 export function validateEnvironment(): void {
   const missingVars: string[] = [];
 
@@ -87,7 +89,7 @@ export async function initializeAgent() {
     }
 
     // Configure CDP Wallet Provider
-    const config = {
+    config = {
       apiKeyName: process.env.CDP_API_KEY_NAME,
       apiKeyPrivateKey: process.env.CDP_API_KEY_PRIVATE_KEY?.replace(
         /\\n/g,
@@ -133,7 +135,7 @@ export async function initializeAgent() {
     };
 
     // Create React Agent using the LLM and CDP AgentKit tools
-    const agent = createReactAgent({
+    agent = createReactAgent({
       llm,
       tools,
       checkpointSaver: memory,
@@ -191,7 +193,7 @@ async function processResponse(chunk: any): Promise<string> {
     return `Error processing response: ${error.message}`;
   }
 }
-export async function registerWalletBasename(agent: any, config: any) {
+export async function registerWalletBasename() {
   try {
     const inputPrompt = "Register a basename if your wallet is not registered";
     const stream = await agent.stream(
@@ -211,11 +213,7 @@ export async function registerWalletBasename(agent: any, config: any) {
   }
 }
 
-export async function updateRobotMetadata(
-  agent: any,
-  config: any,
-  robotData: any
-) {
+export async function updateRobotMetadata(robotData: any) {
   try {
     const userInput = `Update robot metadata with:
     basename: ${robotData.basename}
@@ -241,7 +239,7 @@ export async function updateRobotMetadata(
   }
 }
 
-export async function scanForRaceOpportunities(agent: any, config: any) {
+export async function scanForRaceOpportunities() {
   try {
     const userInput = `Get all upcoming races`;
 
@@ -259,7 +257,7 @@ export async function scanForRaceOpportunities(agent: any, config: any) {
       }
     }
     for (const race of races) {
-      await evaluateAndParticipate(agent, config, race);
+      await evaluateAndParticipate(race);
     }
   } catch (error: any) {
     if (error instanceof Error) {
@@ -267,21 +265,21 @@ export async function scanForRaceOpportunities(agent: any, config: any) {
     }
   }
 }
-async function evaluateAndParticipate(agent: any, config: any, race: any) {
-  const analysis = await analyzeRaceOpportunity(agent, config, race);
+async function evaluateAndParticipate(race: any) {
+  const analysis = await analyzeRaceOpportunity(race);
 
   if (analysis.level > 0) {
-    await participateInRace(agent, config, race.raceId, race.opponent);
+    await participateInRace(race.raceId, race.opponent);
   }
 }
-async function analyzeRaceOpportunity(agent: any, config: any, race: any) {
+async function analyzeRaceOpportunity(race: any) {
   // Get price data from Pyth
   const priceStream = await agent.stream(
     { messages: [new HumanMessage("Get ROBO/USD price from Pyth")] },
     config
   );
 
-  let priceData;
+  let priceData: any;
   for await (const chunk of priceStream) {
     const response = await processResponse(chunk);
     if (response.includes("price")) {
@@ -338,12 +336,7 @@ function extractTrapAmount(response: string) {
     return null;
   }
 }
-async function participateInRace(
-  agent: any,
-  config: any,
-  raceId: string,
-  opponent: string
-) {
+async function participateInRace(raceId: string, opponent: string) {
   // Add stake to race
   const stakeStream = await agent.stream(
     { messages: [new HumanMessage(`Add stake to race ${raceId}`)] },
@@ -355,17 +348,12 @@ async function participateInRace(
   }
 
   // Deploy traps if needed
-  await deployDefensiveTraps(agent, config, raceId, opponent);
+  await deployDefensiveTraps( raceId, opponent);
 
   // Start monitoring
-  await startRaceMonitoring(agent, config, raceId);
+  await startRaceMonitoring( raceId);
 }
-async function deployDefensiveTraps(
-  agent: any,
-  config: any,
-  raceId: string,
-  opponent: string
-) {
+async function deployDefensiveTraps(raceId: string, opponent: string) {
   const trapAmount = await calculateOptimalTrapAmount(opponent);
 
   const trapStream = await agent.stream(
@@ -394,7 +382,7 @@ async function calculateOptimalTrapAmount(opponent: string) {
   return extractTrapAmount(analysis.content);
 }
 
-async function startRaceMonitoring(agent: any, config: any, raceId: string) {
+async function startRaceMonitoring(raceId: string) {
   const monitorStream = await agent.stream(
     { messages: [new HumanMessage(`Monitor race ${raceId} for completion`)] },
     config
@@ -404,6 +392,29 @@ async function startRaceMonitoring(agent: any, config: any, raceId: string) {
     const response = await processResponse(chunk);
     if (response.includes("RaceCompleted")) {
       return response;
+    }
+  }
+}
+
+export async function updateWinner(raceId: string, winner: string) {
+  try {
+    const userInput = `Update the winner in the smart contract with below details by calling completeRace function with the following parameters:
+    raceId: ${raceId}
+    winner: ${winner}`;
+
+    const stream = await agent.stream(
+      { messages: [new HumanMessage(userInput)] },
+      config
+    );
+    console.log("\nProcessing response:");
+    let response = "";
+    for await (const chunk of stream) {
+      response = response + (await processResponse(chunk));
+    }
+    return response;
+  } catch (error: any) {
+    if (error instanceof Error) {
+      console.error("Error:", error.message);
     }
   }
 }

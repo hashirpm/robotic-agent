@@ -1,10 +1,22 @@
 import axios from "axios";
 import {
   generateMatchReminderTweet,
-  generateMatchStartTweet,
   generateRaceCreationTweet,
+  generateRaceEndTweet,
+  generateRaceProgressTweet,
+  generateRaceStartTweet,
+  generateStakingEndTweet,
   generateStakingStartTweet,
-} from "../robot-agent/race-tweets";
+} from "../tweet/race-tweets";
+import { scheduleTweet } from "./helper";
+import { createTweetAPI } from "../scrapers/twitter";
+import {
+  getRaceLog,
+  getRobotData,
+  updateRaceLog,
+} from "../nillion-helpers/race";
+import { generateSpeedScore } from "../agent-kit/speed-score";
+import { updateWinner } from "../agent-kit/robo-agent";
 
 const GRAPH_NETWORK_QUERY_URL =
   "https://api.studio.thegraph.com/query/62284/robot-race/version/latest";
@@ -153,10 +165,12 @@ export async function fetchNewRaces() {
           robot1 { 
           id
           basename
+          twitter
         }
           robot2 {  
           id
           basename 
+          twitter
           }
           totalPrizePool
           raceTime
@@ -184,87 +198,152 @@ export async function fetchNewRaces() {
           `Scheduling tweets for race ${id} between ${robot1.id} and ${robot2.id}`
         );
 
-        //     // Post race creation tweet immediately
-        await generateRaceCreationTweet(
-          robot1.basename,
-          robot2.basename,
+        // Post race creation tweet immediately
+        const tweet = await generateRaceCreationTweet(
+          robot1.twitter,
+          robot2.twitter,
           raceStartDate.toISOString()
         );
+               await createTweetAPI(tweet);
 
         // Schedule staking start tweet
         scheduleTweet(stakingEndDate, -2 * 60 * 60 * 1000, async () => {
-          await generateStakingStartTweet(
-            robot1.basename,
-            robot2.basename,
+          const tweet = await generateStakingStartTweet(
+            robot1.twitter,
+            robot2.twitter,
             stakingEndDate.toISOString()
           );
+          await createTweetAPI(tweet);
         });
 
         // Schedule staking end tweet with total prize pool
         scheduleTweet(stakingEndDate, 0, async () => {
-          const tweet = `⏳ Staking has ended! The total prize pool is ${totalPrizePool} ROBO. The race is coming soon! #AIRace #AutonomousAgents`;
-          console.log("Posting tweet:", tweet);
+          const tweet = await generateStakingEndTweet(
+            robot1.twitter,
+            robot2.twitter,
+            totalPrizePool
+          );
+          await createTweetAPI(tweet);
+          const robot1Data = await getRobotData(robot1.basename);
+          const robot2Data = await getRobotData(robot2.basename);
+          const robot1BaseSpeed = robot1Data.data.baseSpeed;
+          const robot1Abilities = robot1Data.data.hiddenAbilities;
+          const robot2BaseSpeed = robot2Data.data.baseSpeed;
+          const robot2Abilities = robot2Data.data.hiddenAbilities;
+          // Update nillion secret vault with initial data
+          const offChainScoreRobot1 = await generateSpeedScore(
+            robot1.twitter,
+            robot1Abilities
+          );
+          const offChainScoreRobot2 = await generateSpeedScore(
+            robot2.twitter,
+            robot2Abilities
+          );
+
+          await updateRaceLog(
+            race.id,
+            robot1.basename,
+            robot2.basename,
+            100,
+            100,
+            0,
+            0,
+            Number(robot1BaseSpeed) + Number(offChainScoreRobot1),
+            Number(robot2BaseSpeed) + Number(offChainScoreRobot2)
+          );
         });
 
         // Schedule race reminder tweet (1 hour before race start)
         scheduleTweet(raceStartDate, -1 * 60 * 60 * 1000, async () => {
-          await generateMatchReminderTweet(
+          const tweet = await generateMatchReminderTweet(
             robot1.basename,
             robot2.basename,
             raceStartDate.toISOString()
           );
+          await createTweetAPI(tweet);
         });
 
         // Schedule race start tweet
         scheduleTweet(raceStartDate, 0, async () => {
-          await generateMatchStartTweet(robot1.basename, robot2.basename);
+          //Generate a random number between 0 and 80
+          const tweetEnergy = Math.floor(Math.random() * 80);
+          let isTweeted = false;
+          const tweet = await generateRaceStartTweet(
+            robot1.twitter,
+            robot2.twitter,
+            race.totalPrizePool
+          );
+          await createTweetAPI(tweet);
+
+          let raceLog: any;
+          raceLog = await getRaceLog(race.id);
+          while (
+            raceLog.data.sensitiveData.robot1Energy != 0 &&
+            raceLog.data.sensitiveData.robot2Energy != 0
+          ) {
+            const offChainScoreRobot1 = await generateSpeedScore(
+              robot1.twitter
+            );
+            const offChainScoreRobot2 = await generateSpeedScore(
+              robot2.twitter
+            );
+            await updateRaceLog(
+              race.id,
+              raceLog.data.publicData.robot1Id,
+              raceLog.data.publicData.robot2Id,
+              raceLog.data.sensitiveData.robot1Energy,
+              raceLog.data.sensitiveData.robot2Energy,
+              raceLog.data.sensitiveData.robot1Position,
+              raceLog.data.sensitiveData.robot2Position,
+              Number(raceLog.data.sensitiveData.robot1Speed) +
+                Number(offChainScoreRobot1),
+              Number(raceLog.data.sensitiveData.robot2Speed) +
+                Number(offChainScoreRobot2)
+            );
+            if (
+              raceLog.data.sensitiveData.robot1Energy < tweetEnergy &&
+              !isTweeted
+            ) {
+              const tweet = await generateRaceProgressTweet(
+                race.id,
+                robot1.twitter,
+                robot2.twitter,
+                raceLog.data.sensitiveData.robot1Position,
+                raceLog.data.sensitiveData.robot2Position,
+                raceLog.data.sensitiveData.robot1Speed,
+                raceLog.data.sensitiveData.robot2Speed,
+                raceLog.data.sensitiveData.robot1Energy,
+                raceLog.data.sensitiveData.robot2Energy
+              );
+              await createTweetAPI(tweet);
+            }
+            raceLog = await getRaceLog(race.id);
+          }
+
+          if (
+            raceLog.data.sensitiveData.robot1Energy == 0 &&
+            raceLog.data.sensitiveData.robot2Energy == 0
+          ) {
+            const winner =
+              raceLog.data.sensitiveData.robot1Position >
+              raceLog.data.sensitiveData.robot2Position
+                ? robot1.twitter
+                : robot2.twitter;
+            const tweet = await generateRaceEndTweet(
+              race.id,
+              robot1.twitter,
+              robot2.twitter,
+              winner,
+              race.totalPrizePool
+            );
+            await createTweetAPI(tweet);
+            //Call complete race function in smartcontract
+            await updateWinner(race.id, winner);
+          }
         });
       }
     }
   } catch (error) {
     console.error("Error fetching new races:", error);
-  }
-}
-function scheduleTweet(
-  eventDate: Date,
-  offsetMs: number,
-  tweetFunction: () => Promise<void>
-) {
-  const tweetTime = new Date(eventDate.getTime() + offsetMs);
-  const timeUntilTweet = tweetTime.getTime() - Date.now();
-
-  // Check if the delay is too large
-  if (timeUntilTweet > 0) {
-    if (timeUntilTweet > 2_147_483_647) {
-      console.log(
-        `Delay too large for setTimeout, breaking into smaller intervals.`
-      );
-
-      // Split into smaller chunks, e.g., 2-hour intervals
-      const maxDelay = 2_147_483_647; // Max delay for setTimeout
-      let remainingTime = timeUntilTweet;
-
-      // Set intervals of maxDelay
-      while (remainingTime > maxDelay) {
-        setTimeout(async () => {
-          await tweetFunction();
-        }, maxDelay);
-        remainingTime -= maxDelay;
-      }
-
-      // Set the final smaller delay
-      setTimeout(async () => {
-        await tweetFunction();
-      }, remainingTime);
-    } else {
-      console.log(`Tweet scheduled at ${tweetTime.toISOString()}`);
-      setTimeout(async () => {
-        await tweetFunction();
-      }, timeUntilTweet);
-    }
-  } else {
-    console.log(
-      `Skipped scheduling tweet, time already passed: ${tweetTime.toISOString()}`
-    );
   }
 }

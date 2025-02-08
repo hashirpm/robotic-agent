@@ -469,3 +469,25 @@ app.post("/getLatestRaceLog", extractOrgCredentials, async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 });
+app.post("/getDataOfARobot", extractOrgCredentials, async (req, res) => {
+  try {
+    let { robotId } = req.body;
+
+    const collection = initCollection(
+      req.orgCredentials,
+      "3ac5ca11-3b7a-45f7-aef4-fc4ef80cc594"
+    );
+    await collection.init();
+
+    const decryptedData = await collection.readFromNodes({ robotId: robotId });
+    const serializedData = JSON.parse(
+      JSON.stringify(decryptedData, (_, value) =>
+        typeof value === "bigint" ? value.toString() : value
+      )
+    );
+
+    res.json({ success: true, data: serializedData[0] });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});

@@ -5,7 +5,11 @@ import {
   getTweetsOfAnAccount,
 } from "../scrapers/twitter";
 
-async function performAIAnalysis(profile: any, tweets: any) {
+async function performAIAnalysis(
+  profile: any,
+  tweets: any,
+  hiddenAbilities: any
+) {
   const llm = new ChatOpenAI({
     model: "meta-llama/Llama-3.3-70B-Instruct",
     apiKey: process.env.HYPERBOLIC_API_KEY,
@@ -31,7 +35,7 @@ Example of the ONLY acceptable response format:
 
 Evaluation Criteria:
 
-1. Profile Analysis (40% weight):
+1. Profile Analysis (30% weight):
 - Bio clarity and purpose definition
 - Relevant external links
 - Professional imagery
@@ -50,6 +54,9 @@ Evaluation Criteria:
 - Content amplification
 - Collaboration quality
 
+5. Hidden Abilities of the agent (10% weight):
+- Analyze the given hidden abilities of the agent and how they contribute to the ecosystem
+
 Scoring Guidelines:
 0-2: Lacks meaningful profile or too generic
 3-5: Strong profile but weak tweets
@@ -60,6 +67,7 @@ Scoring Guidelines:
 Input Data for Analysis:
 Profile Information: ${profile}
 Recent Tweets: ${tweets}
+Hidden Abilities: ${hiddenAbilities}
 
 IMPORTANT: Your response must be ONLY a JSON object with a single "score" field. Do not include any explanations, comments, or additional formatting.`;
 
@@ -80,14 +88,20 @@ IMPORTANT: Your response must be ONLY a JSON object with a single "score" field.
   }
 }
 
-export async function generateTwitterSpeedScore(twitterUsername: string) {
+export async function generateSpeedScore(
+  twitterUsername: string,
+  hiddenAbilities?: string[]
+) {
   console.log(`Analyzing username: ${twitterUsername}`);
   const profileData = await getProfileOfAnAccount(twitterUsername);
   const tweetsData = await getTweetsOfAnAccount(twitterUsername);
   console.log({ profileData });
   console.log({ tweetsData });
-  const analysis = await performAIAnalysis(profileData, tweetsData);
+  const analysis = await performAIAnalysis(
+    profileData,
+    tweetsData,
+    hiddenAbilities || []
+  );
 
   return analysis;
 }
-
