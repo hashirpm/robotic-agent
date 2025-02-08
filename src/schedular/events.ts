@@ -204,7 +204,7 @@ export async function fetchNewRaces() {
           robot2.twitter,
           raceStartDate.toISOString()
         );
-               await createTweetAPI(tweet);
+        await createTweetAPI(tweet);
 
         // Schedule staking start tweet
         scheduleTweet(stakingEndDate, -2 * 60 * 60 * 1000, async () => {
@@ -287,14 +287,38 @@ export async function fetchNewRaces() {
             const offChainScoreRobot2 = await generateSpeedScore(
               robot2.twitter
             );
+            const robot1UpdatedEnergy = Math.max(
+              0,
+              Math.min(100, Number(raceLog.data.sensitiveData.robot1Energy), -1)
+            );
+            const robot1UpdatedPosition = Math.max(
+              0,
+              Math.min(
+                100,
+                Number(raceLog.data.sensitiveData.robot1Position),
+                +(Number(raceLog.data.sensitiveData.robot1Speed) / 100) * 0.5
+              )
+            );
+            const robot2UpdatedEnergy = Math.max(
+              0,
+              Math.min(100, Number(raceLog.data.sensitiveData.robot2Energy), -1)
+            );
+            const robot2UpdatedPosition = Math.max(
+              0,
+              Math.min(
+                100,
+                Number(raceLog.data.sensitiveData.robot2Position),
+                +(Number(raceLog.data.sensitiveData.robot2Speed) / 100) * 0.5
+              )
+            );
             await updateRaceLog(
               race.id,
               raceLog.data.publicData.robot1Id,
               raceLog.data.publicData.robot2Id,
-              raceLog.data.sensitiveData.robot1Energy,
-              raceLog.data.sensitiveData.robot2Energy,
-              raceLog.data.sensitiveData.robot1Position,
-              raceLog.data.sensitiveData.robot2Position,
+              robot1UpdatedEnergy,
+              robot2UpdatedEnergy,
+              robot1UpdatedPosition,
+              robot2UpdatedPosition,
               Number(raceLog.data.sensitiveData.robot1Speed) +
                 Number(offChainScoreRobot1),
               Number(raceLog.data.sensitiveData.robot2Speed) +

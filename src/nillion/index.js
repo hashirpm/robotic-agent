@@ -315,7 +315,7 @@ app.post("/robotLog", async (req, res) => {
         0,
         Math.min(100, robot1Speed + (Math.random() - 0.5) * 10)
       );
-      robot1Energy = Math.max(0, Math.min(100, robot1Energy - 2));
+      robot1Energy = Math.max(0, Math.min(100, robot1Energy - 1));
       robot1Position = Math.max(
         0,
         Math.min(100, robot1Position + (robot1Speed / 100) * 0.5)
@@ -328,7 +328,7 @@ app.post("/robotLog", async (req, res) => {
         0,
         Math.min(100, robot2Speed + (Math.random() - 0.5) * 10)
       );
-      robot2Energy = Math.max(0, Math.min(100, robot2Energy - 2));
+      robot2Energy = Math.max(0, Math.min(100, robot2Energy - 1));
       robot2Position = Math.max(
         0,
         Math.min(100, robot2Position + (robot2Speed / 100) * 0.5)
