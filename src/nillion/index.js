@@ -39,16 +39,14 @@ const extractOrgCredentials = (req, res, next) => {
 // API Keys Endpoints
 app.post("/api-keys", extractOrgCredentials, async (req, res) => {
   try {
-    const { service, apiKey, apiSecret } = req.body;
+    const { service, apiKey } = req.body;
     const collection = initCollection(
       req.orgCredentials,
       process.env.API_KEYS_SCHEMA_ID
     );
 
     await collection.init();
-    const data = [
-      { service, apiKey: { $allot: apiKey }, apiSecret: { $allot: apiSecret } },
-    ];
+    const data = [{ service, apiKey: { $allot: apiKey } }];
     const result = await collection.writeToNodes(data);
 
     res.json({ success: true, data: result });
@@ -57,9 +55,9 @@ app.post("/api-keys", extractOrgCredentials, async (req, res) => {
   }
 });
 
-app.get("/api-keys", extractOrgCredentials, async (req, res) => {
+app.post("/getApiKeyOfAService", extractOrgCredentials, async (req, res) => {
   console.log("GET /api-keys");
-
+  let { service } = req.body;
   try {
     const collection = initCollection(
       req.orgCredentials,
@@ -67,14 +65,39 @@ app.get("/api-keys", extractOrgCredentials, async (req, res) => {
     );
     await collection.init();
 
-    const decryptedData = await collection.readFromNodes({});
+    const decryptedData = await collection.readFromNodes({ service: service });
     const serializedData = JSON.parse(
       JSON.stringify(decryptedData, (_, value) =>
         typeof value === "bigint" ? value.toString() : value
       )
     );
-    console.log(serializedData);
-    res.json({ success: true, data: serializedData });
+    console.log(serializedData[0]);
+    res.json({ success: true, data: serializedData[0] });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post("/getAiConfig", extractOrgCredentials, async (req, res) => {
+  console.log("GET config");
+  let { name } = req.body;
+  try {
+    const collection = initCollection(
+      req.orgCredentials,
+      process.env.AI_CONFIG_SCHEMA_ID
+    );
+    await collection.init();
+
+    const decryptedData = await collection.readFromNodes({
+      name: name,
+    });
+    const serializedData = JSON.parse(
+      JSON.stringify(decryptedData, (_, value) =>
+        typeof value === "bigint" ? value.toString() : value
+      )
+    );
+    console.log(serializedData[0]);
+    res.json({ success: true, data: serializedData[0] });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }

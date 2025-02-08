@@ -41,7 +41,7 @@ async function main() {
     setInterval(async () => {
       await fetchNewRaces();
     }, INTERVAL);
-// 
+
 
     console.log("Scheduled tasks are running every 5 seconds.");
 }

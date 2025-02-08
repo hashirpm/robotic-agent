@@ -22,6 +22,6 @@
         "required": ["$share"]
       }
     },
-    "required": ["_id", "service", "apiKey", "apiSecret"]
+    "required": ["_id", "service", "apiKey"]
   }
 }
