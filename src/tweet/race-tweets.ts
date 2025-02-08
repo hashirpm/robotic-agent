@@ -75,11 +75,11 @@ export async function generateStakingEndTweet(
   - ${agent1}
   - ${agent2}
 
-  Prize Pool: ${totalPrizePool} ROBO tokens
+  Prize Pool: ${totalPrizePool} $ROBO tokens
 
 Output should just contain the tweet content only. Strictly follow the format of the example Output.
 Example Output:
-  ⏳ Staking for the match between @${agent1} and @${agent2} has officially closed! A massive ${totalPrizePool} ROBO is up for grabs. The race is about to begin—who will win?
+  ⏳ Staking for the match between @${agent1} and @${agent2} has officially closed! A massive ${totalPrizePool} $ROBO is up for grabs. The race is about to begin—who will win?
 
   Generate a tweet in a similar style:`;
 
@@ -114,7 +114,6 @@ Example Output:
 }
 
 export async function generateRaceProgressTweet(
-  raceId: string,
   agent1: string,
   agent2: string,
   agent1Position: number,
@@ -126,20 +125,16 @@ export async function generateRaceProgressTweet(
 ) {
   // Determine who's leading
   const leader = agent1Position > agent2Position ? agent1 : agent2;
-  const leadDistance = Math.abs(agent1Position - agent2Position);
 
   const prompt = `Draft an exciting tweet about the current race progress. Include race stats and who's leading.
-
-  Race ID: ${raceId}
   Agents:
-  - ${agent1} (Position: ${agent1Position}, Speed: ${agent1Speed}, Energy: ${agent1Energy}%)
-  - ${agent2} (Position: ${agent2Position}, Speed: ${agent2Speed}, Energy: ${agent2Energy}%)
+  - ${agent1} ( Speed: ${agent1Speed}, Energy: ${agent1Energy}%)
+  - ${agent2} ( Speed: ${agent2Speed}, Energy: ${agent2Energy}%)
   Leader: ${leader}
-  Lead Distance: ${leadDistance}
 
 Output should just contain the tweet content only. Strictly follow the format of the example Output.
 Example Output:
-  🏃‍♂️ Race #${raceId} Update: @${leader} is in the lead! 
+  🏃‍♂️ Race @${agent1} vs @${agent2} Update: @${leader} is in the lead! 
   
   @${agent1}: ${agent1Energy}% energy, ${agent1Speed}km/h
   @${agent2}: ${agent2Energy}% energy, ${agent2Speed}km/h
@@ -153,7 +148,6 @@ Generate a tweet in a similar style:`;
 }
 
 export async function generateRaceEndTweet(
-  raceId: string,
   agent1: string,
   agent2: string,
   winner: string,
@@ -161,18 +155,16 @@ export async function generateRaceEndTweet(
 ) {
   const prompt = `Draft a tweet announcing the race winner and thanking participants.
 
-  Race ID: ${raceId}
   Winner: ${winner}
-  Runner-up: ${winner === agent1 ? agent2 : agent1}
-  Prize Pool: ${totalPrizePool} ROBO tokens
+  Prize Pool: ${totalPrizePool} $ROBO tokens
 
 Output should just contain the tweet content only. Strictly follow the format of the example Output.
 Example Output:
-  🏆 RACE #${raceId} COMPLETE! Congratulations @${winner} on your victory! 
+  🏆 RACE @${agent1} vs @${agent2} COMPLETE! Congratulations @${winner} on your victory! 
   
   Amazing performance by both @${agent1} and @${agent2}!
   
-  ${totalPrizePool} ROBO rewards will be distributed to winning stakers shortly. Thank you all for participating! 🎉
+  Prize pool of ${totalPrizePool} $ROBO tokens will be distributed to winning stakers shortly. Thank you all for participating! 🎉
 
 Generate a tweet in a similar style:`;
 
@@ -190,13 +182,13 @@ export async function generateRaceStartTweet(
   Agents:
   - ${agent1}
   - ${agent2}
-  Prize Pool: ${totalPrizePool} ROBO tokens
+  Prize Pool: ${totalPrizePool} $ROBO tokens
 
 Output should just contain the tweet content only. Strictly follow the format of the example Output.
 Example Output:
   🚦 RACE @${agent1} vs @${agent2} IS LIVE! 
   
-  💰 Prize Pool: ${totalPrizePool} ROBO
+  💰 Prize Pool: ${totalPrizePool} $ROBO
   
   May the best agent win! 🤖
 

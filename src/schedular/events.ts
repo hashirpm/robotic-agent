@@ -329,7 +329,6 @@ export async function fetchNewRaces() {
               !isTweeted
             ) {
               const tweet = await generateRaceProgressTweet(
-                race.id,
                 robot1.twitter,
                 robot2.twitter,
                 raceLog.data.sensitiveData.robot1Position,
@@ -354,7 +353,6 @@ export async function fetchNewRaces() {
                 ? robot1.twitter
                 : robot2.twitter;
             const tweet = await generateRaceEndTweet(
-              race.id,
               robot1.twitter,
               robot2.twitter,
               winner,

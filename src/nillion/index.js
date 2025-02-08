@@ -42,7 +42,7 @@ app.post("/api-keys", extractOrgCredentials, async (req, res) => {
     const { service, apiKey, apiSecret } = req.body;
     const collection = initCollection(
       req.orgCredentials,
-      "bc4cd53a-07a8-4bba-8805-d8b55f65c7a8"
+      process.env.API_KEYS_SCHEMA_ID
     );
 
     await collection.init();
@@ -63,7 +63,7 @@ app.get("/api-keys", extractOrgCredentials, async (req, res) => {
   try {
     const collection = initCollection(
       req.orgCredentials,
-      "bc4cd53a-07a8-4bba-8805-d8b55f65c7a8"
+      process.env.API_KEYS_SCHEMA_ID
     );
     await collection.init();
 
@@ -97,7 +97,7 @@ app.post("/robots", extractOrgCredentials, async (req, res) => {
     } = req.body;
     const collection = initCollection(
       req.orgCredentials,
-      "3ac5ca11-3b7a-45f7-aef4-fc4ef80cc594"
+      process.env.ROBOT_DATA_SCHEMA_ID
     );
 
     await collection.init();
@@ -127,7 +127,7 @@ app.get("/robots", extractOrgCredentials, async (req, res) => {
   try {
     const collection = initCollection(
       req.orgCredentials,
-      "3ac5ca11-3b7a-45f7-aef4-fc4ef80cc594"
+      process.env.ROBOT_DATA_SCHEMA_ID
     );
     await collection.init();
 
@@ -150,7 +150,7 @@ app.post("/robot-logs", extractOrgCredentials, async (req, res) => {
     const { robotId, actionType, publicData, sensitiveData } = req.body;
     const collection = initCollection(
       req.orgCredentials,
-      "e1f0f1a9-a2fd-454e-9384-d3b572f522a4"
+      process.env.ROBOT_LOG_SCHEMA_ID
     );
 
     await collection.init();
@@ -175,7 +175,7 @@ app.get("/robot-logs", extractOrgCredentials, async (req, res) => {
   try {
     const collection = initCollection(
       req.orgCredentials,
-      "e1f0f1a9-a2fd-454e-9384-d3b572f522a4"
+      process.env.ROBOT_LOG_SCHEMA_ID
     );
     await collection.init();
 
@@ -198,7 +198,7 @@ app.post("/ai-config", extractOrgCredentials, async (req, res) => {
     const { configType, name, data } = req.body;
     const collection = initCollection(
       req.orgCredentials,
-      "24a01fa2-9c0b-4950-a4a7-b1b47d17bd1f"
+      process.env.AI_CONFIG_SCHEMA_ID
     );
 
     await collection.init();
@@ -217,7 +217,7 @@ app.get("/ai-config", extractOrgCredentials, async (req, res) => {
   try {
     const collection = initCollection(
       req.orgCredentials,
-      "24a01fa2-9c0b-4950-a4a7-b1b47d17bd1f"
+      process.env.AI_CONFIG_SCHEMA_ID
     );
     await collection.init();
 
@@ -245,7 +245,7 @@ app.post("/addRobotStake", extractOrgCredentials, async (req, res) => {
     const { staker_id, staker_amount, race_id, robot_id } = req.body;
     const collection = initCollection(
       req.orgCredentials,
-      "e1f0f1a9-a2fd-454e-9384-d3b572f522a4"
+      process.env.ROBOT_LOG_SCHEMA_ID
     );
     const actionType = "STAKE";
     const publicData = { staker_id, staker_amount, race_id };
@@ -272,7 +272,7 @@ app.post("/addRobotTrap", extractOrgCredentials, async (req, res) => {
     const { buyer_id, trap_amount, race_id, robot_id } = req.body;
     const collection = initCollection(
       req.orgCredentials,
-      "e1f0f1a9-a2fd-454e-9384-d3b572f522a4"
+      process.env.ROBOT_LOG_SCHEMA_ID
     );
     const actionType = "TRAP";
     const publicData = { buyer_id, trap_amount, race_id };
@@ -399,7 +399,7 @@ app.post("/raceLog", extractOrgCredentials, async (req, res) => {
     } = req.body;
     const collection = initCollection(
       req.orgCredentials,
-      "7d455593-eab3-4ba9-bd1a-b74d06a87469"
+      process.env.RACE_LOG_SCHEMA_ID
     );
     const publicData = { robot1Id, robot2Id };
     const sensitiveData = {
@@ -451,7 +451,7 @@ app.post("/getLatestRaceLog", extractOrgCredentials, async (req, res) => {
     let { raceId } = req.body;
     const collection = initCollection(
       req.orgCredentials,
-      "7d455593-eab3-4ba9-bd1a-b74d06a87469"
+      process.env.RACE_LOG_SCHEMA_ID
     );
     await collection.init();
     const decryptedData = await collection.readFromNodes({ raceId: raceId });
@@ -475,7 +475,7 @@ app.post("/getDataOfARobot", extractOrgCredentials, async (req, res) => {
 
     const collection = initCollection(
       req.orgCredentials,
-      "3ac5ca11-3b7a-45f7-aef4-fc4ef80cc594"
+      process.env.ROBOT_DATA_SCHEMA_ID
     );
     await collection.init();
 
