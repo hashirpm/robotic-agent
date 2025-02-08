@@ -138,7 +138,7 @@ app.post("/robot-logs", extractOrgCredentials, async (req, res) => {
     const { robotId, actionType, publicData, sensitiveData } = req.body;
     const collection = initCollection(
       req.orgCredentials,
-      "927c582e-8f2c-4b33-96b5-bf35b8c86fbc"
+      "e1f0f1a9-a2fd-454e-9384-d3b572f522a4"
     );
 
     await collection.init();
@@ -163,7 +163,7 @@ app.get("/robot-logs", extractOrgCredentials, async (req, res) => {
   try {
     const collection = initCollection(
       req.orgCredentials,
-      "927c582e-8f2c-4b33-96b5-bf35b8c86fbc"
+      "e1f0f1a9-a2fd-454e-9384-d3b572f522a4"
     );
     await collection.init();
 
@@ -227,3 +227,58 @@ const PORT = process.env.PORT || 3001;
 app.listen(PORT, () =>
   console.log(`Robot Vault Server running on port ${PORT}`)
 );
+
+app.post("/addRobotStake", extractOrgCredentials, async (req, res) => {
+  try {
+    const { staker_id, staker_amount, race_id, robot_id } = req.body;
+    const collection = initCollection(
+      req.orgCredentials,
+      "e1f0f1a9-a2fd-454e-9384-d3b572f522a4"
+    );
+    const actionType = "STAKE";
+    const publicData = { staker_id, staker_amount, race_id };
+    const sensitiveData = {};
+    await collection.init();
+    const data = [
+      {
+        robot_id,
+        timestamp: new Date().toISOString(),
+        actionType,
+        publicData,
+        sensitiveData: { $allot: JSON.stringify(sensitiveData) },
+      },
+    ];
+    const result = await collection.writeToNodes(data);
+
+    res.json({ success: true, data: result });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+app.post("/addRobotTrap", extractOrgCredentials, async (req, res) => {
+  try {
+    const { buyer_id, trap_amount, race_id, robot_id } = req.body;
+    const collection = initCollection(
+      req.orgCredentials,
+      "e1f0f1a9-a2fd-454e-9384-d3b572f522a4"
+    );
+    const actionType = "TRAP";
+    const publicData = { buyer_id, trap_amount, race_id };
+    const sensitiveData = {};
+    await collection.init();
+    const data = [
+      {
+        robot_id,
+        timestamp: new Date().toISOString(),
+        actionType,
+        publicData,
+        sensitiveData: { $allot: JSON.stringify(sensitiveData) },
+      },
+    ];
+    const result = await collection.writeToNodes(data);
+
+    res.json({ success: true, data: result });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});

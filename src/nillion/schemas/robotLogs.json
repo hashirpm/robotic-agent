@@ -19,7 +19,7 @@
       },
       "actionType": {
         "type": "string",
-        "enum": ["RACE", "STAKE", "UPGRADE", "TWEET", "ABILITY_USE"]
+        "enum": ["RACE", "STAKE", "UPGRADE", "TWEET", "TRAP"]
       },
       "publicData": {
         "type": "object"

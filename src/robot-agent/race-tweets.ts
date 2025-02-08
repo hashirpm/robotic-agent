@@ -16,10 +16,6 @@ const llm = new ChatOpenAI({
   temperature: 0.7, // Higher temperature for creative tweet generation
   topP: 0.9,
 });
-
-/**
- * Generate a tweet when a race is created
- */
 export async function generateRaceCreationTweet(
   agent1: string,
   agent2: string,
@@ -31,7 +27,7 @@ export async function generateRaceCreationTweet(
   - ${agent1}
   - ${agent2}
 
-  Race Date: ${raceDate}
+  Race Date: ${raceDate} - Convert UNIX timestamp to a human-readable date
 
   Example Tweet:
   "🚀 Exciting news! A thrilling race is set between ${agent1} and ${agent2} on ${raceDate}. Who will dominate the track? Stay tuned! #AIRace #AutonomousAgents"
@@ -41,28 +37,21 @@ export async function generateRaceCreationTweet(
   const response = await llm.invoke(prompt);
   return response.content.toString();
 }
+export async function generateStakingStartTweet(
+  agent1: string,
+  agent2: string,
+  stakingEndTime: string
+) {
+  const prompt = `Draft a tweet announcing that staking has started for an AI race. The tweet should encourage participation and highlight the agents.
 
-/**
- * Generate a tweet about both participants
- */
-export async function generateParticipantTweet(agent1: string, agent2: string) {
-  const profile1 = await getProfileOfAnAccount(agent1);
-  const profile2 = await getProfileOfAnAccount(agent2);
-  const tweets1 = await getTweetsOfAnAccount(agent1);
-  const tweets2 = await getTweetsOfAnAccount(agent2);
+  Agents:
+  - ${agent1}
+  - ${agent2}
 
-  const prompt = `Draft a tweet introducing two AI agents who will compete in a race. Analyze their Twitter profiles and tweets to understand their style and create a tweet that reflects their personalities.
-
-  Agent 1:
-  - Profile: ${profile1}
-  - Tweets: ${tweets1}
-
-  Agent 2:
-  - Profile: ${profile2}
-  - Tweets: ${tweets2}
+  Staking ends at: ${stakingEndTime} (convert UNIX timestamp to a readable date)
 
   Example Tweet:
-  "Meet our competitors! ${agent1} is known for its lightning-fast algorithms, while ${agent2} brings unparalleled precision. Who will win? Let the race begin! #AIRace #AutonomousAgents"
+  "🔥 Staking is LIVE! Back your favorite AI racer! Will ${agent1} or ${agent2} take the crown? Stake now before ${stakingEndTime}! #AIRace #Staking"
 
   Generate a tweet in a similar style:`;
 
@@ -71,13 +60,23 @@ export async function generateParticipantTweet(agent1: string, agent2: string) {
 }
 
 /**
- * Generate a tweet when staking starts
+ * Generate a tweet when staking ends, including the total prize pool
  */
-export async function generateStakingStartTweet() {
-  const prompt = `Draft a tweet announcing that staking has started for the upcoming race. The tweet should encourage participation and explain the benefits of staking. ROBO is the token that is to be staked.
+export async function generateStakingEndTweet(
+  agent1: string,
+  agent2: string,
+  totalPrizePool: number
+) {
+  const prompt = `Draft a tweet announcing that staking has ended for the AI race. The tweet should thank participants and mention the total prize pool.
+  
+  Agents:
+  - ${agent1}
+  - ${agent2}
+
+  Prize Pool: ${totalPrizePool} ROBO tokens
 
   Example Tweet:
-  "🎉 Staking is now LIVE for the next AI race! Stake your ROBO tokens to support your favorite agent and earn rewards. Don't miss out! #AIRace #Staking"
+  "⏳ Staking for the match between ${agent1} and ${agent2} has officially closed! A massive ${totalPrizePool} ROBO is up for grabs. The race is about to begin—who will win? #AIRace #AutonomousAgents"
 
   Generate a tweet in a similar style:`;
 
@@ -86,30 +85,23 @@ export async function generateStakingStartTweet() {
 }
 
 /**
- * Generate a tweet when staking ends
+ * Generate a reminder tweet 1 hour before the race
  */
-export async function generateStakingEndTweet() {
-  const prompt = `Draft a tweet announcing that staking has ended for the upcoming race. The tweet should thank participants and build excitement for the race. 
+export async function generateMatchReminderTweet(
+  agent1: string,
+  agent2: string,
+  raceTime: any
+) {
+  const prompt = `Draft a reminder tweet for the upcoming AI race. Mention the competing agents and the race time.
+
+  Agents:
+  - ${agent1}
+  - ${agent2}
+
+  Race Time: ${raceTime} (convert UNIX timestamp to a readable date)
 
   Example Tweet:
-  "⏰ Staking for the AI race has officially ended! Thank you to everyone who participated. The race is about to begin—stay tuned for the results! #AIRace #AutonomousAgents"
-
-  Generate a tweet in a similar style:`;
-
-  const response = await llm.invoke(prompt);
-  return response.content.toString();
-}
-
-/**
- * Generate a reminder tweet for the match date
- */
-export async function generateMatchReminderTweet(raceDate: string) {
-  const prompt = `Draft a reminder tweet for the upcoming AI race. Include the race date and build excitement.
-
-  Race Date: ${raceDate}
-
-  Example Tweet:
-  "⏳ Just 24 hours until the AI race! Don't forget to tune in on ${raceDate} to see which agent takes the crown. #AIRace #AutonomousAgents"
+  "🚨 1 HOUR TO GO! The showdown between ${agent1} and ${agent2} is almost here. Who's your pick? Get ready for an epic race at ${raceTime}! #AIRace #Countdown"
 
   Generate a tweet in a similar style:`;
 
@@ -121,18 +113,17 @@ export async function generateMatchReminderTweet(raceDate: string) {
  * Generate a tweet when the match starts
  */
 export async function generateMatchStartTweet(agent1: string, agent2: string) {
-  const prompt = `Draft a tweet announcing that the race between two AI agents has started. Mention both agents and encourage viewers to follow the action.
+  const prompt = `Draft a tweet announcing that the race has started. Mention both competitors and encourage engagement.
 
   Agents:
   - ${agent1}
   - ${agent2}
 
   Example Tweet:
-  "🏁 The race between ${agent1} and ${agent2} has officially started! Follow the action live and see who emerges victorious. #AIRace #AutonomousAgents"
+  "🏁 IT'S RACE TIME! ${agent1} and ${agent2} are off to a thrilling start. Stay tuned for the action! Who will cross the finish line first? #AIRace #LiveRace"
 
   Generate a tweet in a similar style:`;
 
   const response = await llm.invoke(prompt);
   return response.content.toString();
 }
-
