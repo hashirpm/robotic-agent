@@ -52,6 +52,8 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
+    "@coinbase/agentkit": "^0.1.2",
+    "@coinbase/agentkit-langchain": "^0.1.0",
     "@coinbase/cdp-agentkit-core": "^0.0.7",
     "@coinbase/cdp-langchain": "^0.0.8",
     "@langchain/core": "^0.3.20",
@@ -60,7 +62,7 @@
     "agent-twitter-client": "github:elizaOS/agent-twitter-client",
     "dotenv": "^16.4.7",
     "langchain-xai": "^0.2.2",
-    "tough-cookie": "^5.1.0",
-    "nillion-sv-wrappers": "^1.0.4"
+    "nillion-sv-wrappers": "^1.0.4",
+    "tough-cookie": "^5.1.0"
   }
 }

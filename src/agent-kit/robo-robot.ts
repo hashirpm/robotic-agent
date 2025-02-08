@@ -20,7 +20,7 @@ import * as fs from "fs";
 import * as readline from "readline";
 
 dotenv.config();
-
+let llm: any;
 function validateEnvironment(): void {
   const missingVars: string[] = [];
 
@@ -58,21 +58,11 @@ validateEnvironment();
 
 // Configure a file to persist the agent's CDP MPC Wallet Data
 const WALLET_DATA_FILE = "wallet_data.txt";
-/**
- * Initialize the agent with CDP Agentkit
- *
- * @returns Agent executor and config
- */
-async function initializeAgent() {
+
+export async function initializeAgent() {
   try {
-    // const llm = new ChatOpenAI({
-    //   model: "llama3b",
-    //   apiKey: process.env.XAI_API_KEY,
-    //   configuration: {
-    //     baseURL: "https://llama3b.gaia.domains/v1",
-    //   },
     // });
-    const llm = new ChatOpenAI({
+    llm = new ChatOpenAI({
       model: "meta-llama/Meta-Llama-3.1-405B-Instruct",
       apiKey: process.env.HYPERBOLIC_API_KEY,
       configuration: {
@@ -146,11 +136,17 @@ async function initializeAgent() {
       checkpointSaver: memory,
       messageModifier: `
         You are an AI agent operating on the Base Sepolia testnet using Coinbase Developer Platform AgentKit.
+
+        Smart Contract Address = ${process.env.ROBO_RACE_CONTRACT_ADDRESS}
+        You can interact with the Robo Racing smart contract to participate or fetch details to perform your actions. 
+        You have access to read and write functions to interact with the contract.
+
         Before performing any action:
         1. Always verify the current network ID (should be base-sepolia)
         2. Check wallet balance and request funds from faucet if needed
         3. Verify transaction status after execution
         4. Provide accurate transaction hashes and confirmation details
+        5. Sign transactions with your CDP MPC Wallet if needed
         
         For operations:
         - Use 18 decimals for ERC20 tokens
@@ -184,15 +180,7 @@ async function processResponse(chunk: any): Promise<string> {
     if ("agent" in chunk) {
       return chunk.agent.messages[0].content;
     } else if ("tools" in chunk) {
-      // Try to parse the python_tag content if present
       const content = chunk.tools.messages[0].content;
-      // if (content.includes("<|python_tag|>")) {
-      //   const jsonStr = content
-      //     .split("<|python_tag|>")[1]
-      //     .split("<|eom_id|>")[0];
-      //   const parsed = JSON.parse(jsonStr);
-      //   return `Executing action: ${parsed.name} with parameters: ${JSON.stringify(parsed.parameters, null, 2)}`;
-      // }
       return content;
     }
     return JSON.stringify(chunk, null, 2);
@@ -200,70 +188,219 @@ async function processResponse(chunk: any): Promise<string> {
     return `Error processing response: ${error.message}`;
   }
 }
-async function runChatMode(agent: any, config: any) {
-  console.log("Starting chat mode... Type 'exit' to end.");
-
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
-
-  const question = (prompt: string): Promise<string> =>
-    new Promise((resolve) => rl.question(prompt, resolve));
-
+export async function registerWalletBasename(agent: any, config: any) {
   try {
-    // while (true) {
-    const userInput = "Which is the latest block number";
-    console.log({ userInput });
+    const inputPrompt = "Register a basename if your wallet is not registered";
     const stream = await agent.stream(
-      { messages: [new HumanMessage(userInput)] },
+      { messages: [new HumanMessage(inputPrompt)] },
       config
     );
-    let tweetContent = "";
-    // for await (const chunk of stream) {
-    //   if ("agent" in chunk) {
-    //     tweetContent = chunk.agent.messages[0].content;
-    //   } else if ("tools" in chunk) {
-    //     tweetContent = chunk.tools.messages[0].content;
-    //   }
-    // }
     console.log("\nProcessing response:");
+    let response = "";
     for await (const chunk of stream) {
-      const response = await processResponse(chunk);
-      console.log(response);
+      response = response + (await processResponse(chunk));
     }
-    console.log({ tweetContent });
-    // }
+    return response;
   } catch (error: any) {
     if (error instanceof Error) {
       console.error("Error:", error.message);
     }
-    process.exit(1);
-  } finally {
-    rl.close();
   }
 }
 
-/**
- * Start the chatbot agent
- */
-async function main() {
+export async function updateRobotMetadata(
+  agent: any,
+  config: any,
+  robotData: any
+) {
   try {
-    const { agent, config } = await initializeAgent();
-    console.log("Agent initialized");
-    await runChatMode(agent, config);
-  } catch (error) {
+    const userInput = `Update robot metadata with:
+    basename: ${robotData.basename}
+    twitter: ${robotData.twitter}
+    tokenName: ${robotData.tokenName}
+    tokenAddress: ${robotData.tokenAddress}
+    level: ${robotData.level}`;
+
+    const stream = await agent.stream(
+      { messages: [new HumanMessage(userInput)] },
+      config
+    );
+    console.log("\nProcessing response:");
+    let response = "";
+    for await (const chunk of stream) {
+      response = response + (await processResponse(chunk));
+    }
+    return response;
+  } catch (error: any) {
     if (error instanceof Error) {
       console.error("Error:", error.message);
     }
-    process.exit(1);
   }
 }
 
-if (require.main === module) {
-  console.log("Starting Agent...");
-  main().catch((error: any) => {
-    console.error("Fatal error:", error);
-    process.exit(1);
-  });
+export async function scanForRaceOpportunities(agent: any, config: any) {
+  try {
+    const userInput = `Get all upcoming races`;
+
+    const stream = await agent.stream(
+      { messages: [new HumanMessage(userInput)] },
+      config
+    );
+    const races = [];
+    console.log("\nProcessing response:");
+
+    for await (const chunk of stream) {
+      const response = await processResponse(chunk);
+      if (response.includes("races")) {
+        races.push(...parseRaces(response));
+      }
+    }
+    for (const race of races) {
+      await evaluateAndParticipate(agent, config, race);
+    }
+  } catch (error: any) {
+    if (error instanceof Error) {
+      console.error("Error:", error.message);
+    }
+  }
+}
+async function evaluateAndParticipate(agent: any, config: any, race: any) {
+  const analysis = await analyzeRaceOpportunity(agent, config, race);
+
+  if (analysis.level > 0) {
+    await participateInRace(agent, config, race.raceId, race.opponent);
+  }
+}
+async function analyzeRaceOpportunity(agent: any, config: any, race: any) {
+  // Get price data from Pyth
+  const priceStream = await agent.stream(
+    { messages: [new HumanMessage("Get ROBO/USD price from Pyth")] },
+    config
+  );
+
+  let priceData;
+  for await (const chunk of priceStream) {
+    const response = await processResponse(chunk);
+    if (response.includes("price")) {
+      priceData = parsePrice(response);
+    }
+  }
+
+  // Analyze using LLM
+  const analysisPrompt = `Analyze race opportunity with:
+    Price: ${priceData.price}
+    Race: ${JSON.stringify(race)}
+  `;
+
+  return await llm.invoke(analysisPrompt);
+}
+function parseRobotData(response: string) {
+  const match = response.match(/"robotData"\s*:\s*(\d+)/);
+  if (match) {
+    const robotData = parseInt(match[1], 10);
+    console.log("Extracted data:", robotData);
+    return robotData;
+  } else {
+    console.error("Error: Data not found in response.");
+    return null;
+  }
+}
+
+function parseRaces(response: string) {
+  const match = response.match(/"races"\s*:\s*(\d+)/);
+  if (match) {
+    return match;
+  } else {
+    console.error("Error: Data not found in response.");
+    return null;
+  }
+}
+
+function parsePrice(response: string) {
+  const match = response.match(/"price"\s*:\s*(\d+)/);
+  if (match) {
+    return match[1];
+  } else {
+    console.error("Error: Data not found in response.");
+    return null;
+  }
+}
+function extractTrapAmount(response: string) {
+  const match = response.match(/"amount"\s*:\s*(\d+)/);
+
+  if (match) {
+    return match[1];
+  } else {
+    console.error("Error: Data not found in response.");
+    return null;
+  }
+}
+async function participateInRace(
+  agent: any,
+  config: any,
+  raceId: string,
+  opponent: string
+) {
+  // Add stake to race
+  const stakeStream = await agent.stream(
+    { messages: [new HumanMessage(`Add stake to race ${raceId}`)] },
+    config
+  );
+
+  for await (const chunk of stakeStream) {
+    console.log("Staking progress:", await processResponse(chunk));
+  }
+
+  // Deploy traps if needed
+  await deployDefensiveTraps(agent, config, raceId, opponent);
+
+  // Start monitoring
+  await startRaceMonitoring(agent, config, raceId);
+}
+async function deployDefensiveTraps(
+  agent: any,
+  config: any,
+  raceId: string,
+  opponent: string
+) {
+  const trapAmount = await calculateOptimalTrapAmount(opponent);
+
+  const trapStream = await agent.stream(
+    {
+      messages: [
+        new HumanMessage(
+          `Buy trap for race ${raceId} targeting ${opponent} with amount ${trapAmount}`
+        ),
+      ],
+    },
+    config
+  );
+
+  for await (const chunk of trapStream) {
+    console.log("Trap deployment:", await processResponse(chunk));
+  }
+}
+
+async function calculateOptimalTrapAmount(opponent: string) {
+  // Get opponent data and analyze using LLM
+  const analysis = await llm.invoke(`
+      Calculate optimal trap amount for opponent by checking the level of the opponent robot:
+      Opponent: ${opponent}
+    `);
+
+  return extractTrapAmount(analysis.content);
+}
+
+async function startRaceMonitoring(agent: any, config: any, raceId: string) {
+  const monitorStream = await agent.stream(
+    { messages: [new HumanMessage(`Monitor race ${raceId} for completion`)] },
+    config
+  );
+
+  for await (const chunk of monitorStream) {
+    const response = await processResponse(chunk);
+    if (response.includes("RaceCompleted")) {
+      return response;
+    }
+  }
 }

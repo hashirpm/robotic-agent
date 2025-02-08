@@ -5,12 +5,18 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@coinbase/agentkit':
+    specifier: ^0.1.2
+    version: 0.1.2(typescript@5.7.3)
+  '@coinbase/agentkit-langchain':
+    specifier: ^0.1.0
+    version: 0.1.0(typescript@5.7.3)
   '@coinbase/cdp-agentkit-core':
     specifier: ^0.0.7
     version: 0.0.7(typescript@5.7.3)
   '@coinbase/cdp-langchain':
     specifier: ^0.0.8
-    version: 0.0.8(@coinbase/coinbase-sdk@0.11.3)(typescript@5.7.3)
+    version: 0.0.8(typescript@5.7.3)
   '@langchain/core':
     specifier: ^0.3.20
     version: 0.3.38
@@ -419,6 +425,38 @@ packages:
     resolution: {integrity: sha512-gAmrUZSGtKc3AiBL71iNWxDsyUC5uMaKKGdvzYsBoTW/xi42JQHl7eKV2OYzCUqvc+D2RCcf7EXY2iCyFIk6og==}
     dev: false
 
+  /@coinbase/agentkit-langchain@0.1.0(typescript@5.7.3):
+    resolution: {integrity: sha512-JJj+vzPeoVB6RbY31tQEOYXtb6NrEdXbf2KlRABF/bhCo84fpGlawqIxCsIOf1HXcOx+erG2NokUr8k53/fulw==}
+    peerDependencies:
+      '@coinbase/coinbase-sdk': ^0.15.0
+    dependencies:
+      '@coinbase/agentkit': 0.1.2(typescript@5.7.3)
+      '@langchain/core': 0.3.38
+      zod: 3.24.1
+    transitivePeerDependencies:
+      - bufferutil
+      - debug
+      - openai
+      - typescript
+      - utf-8-validate
+    dev: false
+
+  /@coinbase/agentkit@0.1.2(typescript@5.7.3):
+    resolution: {integrity: sha512-vG7crTvtkG/dovng5vSuOgHam7KXeirTPi3yzPbVyV+Xi3toGxB51ZYOXPiqp31tKI9avm2TSNuv7nCnPQEAVg==}
+    dependencies:
+      '@coinbase/coinbase-sdk': 0.17.0(typescript@5.7.3)(zod@3.24.1)
+      md5: 2.3.0
+      reflect-metadata: 0.2.2
+      twitter-api-v2: 1.19.1
+      viem: 2.22.23(typescript@5.7.3)(zod@3.24.1)
+      zod: 3.24.1
+    transitivePeerDependencies:
+      - bufferutil
+      - debug
+      - typescript
+      - utf-8-validate
+    dev: false
+
   /@coinbase/cdp-agentkit-core@0.0.7(typescript@5.7.3):
     resolution: {integrity: sha512-UZzes8fob0RKbHD3lQ4wSB9fnBOVxLIQYmyk3H3Yhri2vHnbVMkRGM+5kVtGF+ujhPo8tNM9q/ep1blY7spFmA==}
     dependencies:
@@ -432,13 +470,12 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@coinbase/cdp-langchain@0.0.8(@coinbase/coinbase-sdk@0.11.3)(typescript@5.7.3):
+  /@coinbase/cdp-langchain@0.0.8(typescript@5.7.3):
     resolution: {integrity: sha512-P6roJyCZ1uHSAeHxyWP1PIKDMfsuSwE1mvoERubKwhunu0tM4CPxRlcg/2MiNvwSQkcvn3uqZsFgVgbSPeIPVg==}
     peerDependencies:
       '@coinbase/coinbase-sdk': ^0.11.0
     dependencies:
       '@coinbase/cdp-agentkit-core': 0.0.7(typescript@5.7.3)
-      '@coinbase/coinbase-sdk': 0.11.3(typescript@5.7.3)(zod@3.24.1)
       '@langchain/core': 0.3.38
       zod: 3.24.1
     transitivePeerDependencies:
@@ -451,6 +488,30 @@ packages:
 
   /@coinbase/coinbase-sdk@0.11.3(typescript@5.7.3)(zod@3.24.1):
     resolution: {integrity: sha512-+Q2nttVnIorjlrZtwp3O4arKswxxItCb8hzneoyRiACgfDP/R+p0Pz9//HUyBkBjl/4nACVFEviMF5dyi3tzig==}
+    dependencies:
+      '@scure/bip32': 1.6.2
+      abitype: 1.0.8(typescript@5.7.3)(zod@3.24.1)
+      axios: 1.7.9
+      axios-mock-adapter: 1.22.0(axios@1.7.9)
+      axios-retry: 4.5.0(axios@1.7.9)
+      bip32: 4.0.0
+      bip39: 3.1.0
+      decimal.js: 10.5.0
+      dotenv: 16.4.7
+      ethers: 6.13.5
+      node-jose: 2.2.0
+      secp256k1: 5.0.1
+      viem: 2.22.23(typescript@5.7.3)(zod@3.24.1)
+    transitivePeerDependencies:
+      - bufferutil
+      - debug
+      - typescript
+      - utf-8-validate
+      - zod
+    dev: false
+
+  /@coinbase/coinbase-sdk@0.17.0(typescript@5.7.3)(zod@3.24.1):
+    resolution: {integrity: sha512-YdEO6kbi0EDTzmPBqKtvDR/78P2Zw72rLmM6LS6yGZuTnfrXRhYR7/xAY0Fesoc1BcCL4eodwc+txUxrpdYCcg==}
     dependencies:
       '@scure/bip32': 1.6.2
       abitype: 1.0.8(typescript@5.7.3)(zod@3.24.1)
@@ -1766,6 +1827,10 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
+  /charenc@0.0.2:
+    resolution: {integrity: sha512-yrLQ/yVUFXkzg7EDQsPieE/53+0RlaWTs+wBrvW36cyilJ2SaDWfl4Yj7MtLTXleV9uEKefbAGUPv2/iWSooRA==}
+    dev: false
+
   /ci-info@3.9.0:
     resolution: {integrity: sha512-NIxF55hv4nSqQswkAeiOi1r83xy8JldOFDTWiug55KBu9Jnblncd2U6ViHmYgHf01TPZS77NJBhBMKdWj9HQMQ==}
     engines: {node: '>=8'}
@@ -1882,6 +1947,10 @@ packages:
       shebang-command: 2.0.0
       which: 2.0.2
     dev: true
+
+  /crypt@0.0.2:
+    resolution: {integrity: sha512-mCxBlsHFYh9C+HVpiEacem8FEBnMXgU9gy4zmNC+SXAZNB/1idgp/aulFJ4FgCi7GPEVbfyng092GqL2k2rmow==}
+    dev: false
 
   /debug@4.4.0:
     resolution: {integrity: sha512-6WTZ/IxCY/T6BALoZHaE4ctp9xm+Z5kY/pzYaCHRFeyVhojxlrm+46y68HA6hr0TcwEssoxNiDEUJQjfPZ/RYA==}
@@ -2670,6 +2739,10 @@ packages:
   /is-arrayish@0.2.1:
     resolution: {integrity: sha512-zz06S8t0ozoDXMG+ube26zeCTNXcKIPJZJi8hBrF4idCLms4CG9QtK7qBl1boi5ODzFpjswb5JPmHCbMpjaYzg==}
     dev: true
+
+  /is-buffer@1.1.6:
+    resolution: {integrity: sha512-NcdALwpXkTm5Zvvbk7owOUSvVvBKDgKP5/ewfXEznmQFfs4ZRmanOeKBTjRVjka3QFoN6XJ+9F3USqfHqTaU5w==}
+    dev: false
 
   /is-buffer@2.0.5:
     resolution: {integrity: sha512-i2R6zNFDwgEHJyQUtJEk0XFi1i0dPFn/oqjK3/vPCcDeJvW5NQ83V8QbicfF1SupOaB0h8ntgBC2YiE7dfyctQ==}
@@ -3463,6 +3536,14 @@ packages:
       safe-buffer: 5.2.1
     dev: false
 
+  /md5@2.3.0:
+    resolution: {integrity: sha512-T1GITYmFaKuO91vxyoQMFETst+O71VUPEU3ze5GNzDm0OWdP8v1ziTaAEPUr/3kLsY3Sftgz242A1SetQiDL7g==}
+    dependencies:
+      charenc: 0.0.2
+      crypt: 0.0.2
+      is-buffer: 1.1.6
+    dev: false
+
   /mdurl@2.0.0:
     resolution: {integrity: sha512-Lf+9+2r+Tdp5wXDXC4PcIBjTDtq4UKjCPMQhKIuzpJNW0b96kVqSwW0bT7FhRSfmAiFYgP+SCRvdrDozfh0U5w==}
     dev: true
@@ -3968,6 +4049,10 @@ packages:
       inherits: 2.0.4
       string_decoder: 1.3.0
       util-deprecate: 1.0.2
+    dev: false
+
+  /reflect-metadata@0.2.2:
+    resolution: {integrity: sha512-urBwgfrvVP/eAyXx4hluJivBKzuEbSQs9rKWCrCkbSxNv8mxPcUZKeuoF3Uy4mJl3Lwprp6yy5/39VWigZ4K6Q==}
     dev: false
 
   /require-directory@2.1.1:
@@ -4748,7 +4833,6 @@ packages:
     resolution: {tarball: https://codeload.github.com/elizaOS/agent-twitter-client/tar.gz/fd5cb982c14c1ea75f30b2739ae9a9eb2d2ae394}
     name: agent-twitter-client
     version: 0.0.18
-    prepare: true
     requiresBuild: true
     dependencies:
       '@roamhq/wrtc': 0.8.0

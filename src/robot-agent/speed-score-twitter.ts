@@ -5,9 +5,6 @@ import {
   getTweetsOfAnAccount,
 } from "../scrapers/twitter";
 
-/**
- * Analyze Twitter profile and content using AI
- */
 async function performAIAnalysis(profile: any, tweets: any) {
   const llm = new ChatOpenAI({
     model: "meta-llama/Llama-3.3-70B-Instruct",
@@ -89,9 +86,8 @@ export async function generateTwitterSpeedScore(twitterUsername: string) {
   const tweetsData = await getTweetsOfAnAccount(twitterUsername);
   console.log({ profileData });
   console.log({ tweetsData });
-  // const analysis = await performAIAnalysis(profileData, tweetsData);
+  const analysis = await performAIAnalysis(profileData, tweetsData);
 
-  // return analysis;
+  return analysis;
 }
 
-generateTwitterSpeedScore("0xShiyasmohd")
