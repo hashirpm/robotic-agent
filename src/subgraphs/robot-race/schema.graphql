@@ -49,4 +49,5 @@ type Trap @entity {
   buyer: String!
   amount: BigInt!
   timestamp: BigInt!
+  robot: Robot!
 }

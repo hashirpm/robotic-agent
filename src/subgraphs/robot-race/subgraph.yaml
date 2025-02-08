@@ -8,7 +8,7 @@ dataSources:
     name: RobotRaceManager
     network: base-sepolia
     source:
-      address: "0xAE67A96Ce028A6965dDE4F8b2c7D13894Bb6c56d"
+      address: "0xdCBd5adC1c11819f53e9f41B3a9bbEf0190E5CbF"
       abi: RobotRaceManager
       startBlock: 21581240
     mapping:
@@ -30,10 +30,13 @@ dataSources:
           handler: handleMinimumStakeUpdated
         - event: StakeAdded(indexed address,indexed address,uint256)
           handler: handleStakeAdded
-        - event: TrapPurchased(indexed address,uint256,uint256)
+        - event: TrapPurchased(indexed address,uint256,uint256,address)
           handler: handleTrapPurchased
         - event: RaceCreated(indexed uint256,address,address,uint256,uint256)
           handler: handleRaceCreated
         - event: RaceCompleted(indexed uint256,address,uint256,uint256)
           handler: handleRaceCompleted
+      callHandlers:
+        - function: updateRobotData(address,string,string,string,address,uint256)
+          handler: handleUpdateRobotData
       file: ./src/mapping.ts

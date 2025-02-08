@@ -7,7 +7,7 @@ import { ChatOpenAI } from "@langchain/openai";
 import * as dotenv from "dotenv";
 import * as fs from "fs";
 import * as readline from "readline";
-
+import { generateTwitterSpeedScore } from "./src/robot-agent/speed-score-twitter";
 
 dotenv.config();
 
@@ -253,12 +253,12 @@ async function chooseMode(): Promise<"chat" | "auto"> {
  */
 async function main() {
   try {
-   
-    const { agent, config } = await initializeAgent();
+await generateTwitterSpeedScore("0xShiyasmohd");
+    // const { agent, config } = await initializeAgent();
     // const mode = await chooseMode();
 
     // if (mode === "chat") {
-      await runChatMode(agent, config);
+      // await runChatMode(agent, config);
     // } else {
     //   await runAutonomousMode(agent, config);
     // }
@@ -277,3 +277,4 @@ if (require.main === module) {
     process.exit(1);
   });
 }
+

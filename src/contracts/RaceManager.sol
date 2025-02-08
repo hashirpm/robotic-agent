@@ -44,7 +44,7 @@ contract RobotRaceManager {
     event RobotRegistered(address indexed robot, uint256 minimumStake);
     event MinimumStakeUpdated(address indexed robot, uint256 newMinimumStake);
     event StakeAdded(address indexed robot, address indexed staker, uint256 amount);
-    event TrapPurchased(address indexed buyer, uint256 amountBurned, uint256 raceId);
+    event TrapPurchased(address indexed buyer, uint256 amountBurned, uint256 raceId,address robot);
     event RaceCreated(
         uint256 indexed raceId, 
         address robot1, 
@@ -220,15 +220,13 @@ contract RobotRaceManager {
 
         emit RaceCompleted(raceId, winner, stakersReward, robotReward);
     }
-   function buyTrap(uint256 raceId, uint256 amount) external {
+   function buyTrap(uint256 raceId, address robot, uint256 amount) external {
         require(amount > 0, "Invalid amount");
-        require(races[raceId].isActive, "Race not active");
 
-        require(roboToken.transferFrom(msg.sender, address(this), amount), "Trap purchase failed");
+        require(roboToken.transferFrom(msg.sender, 0x000000000000000000000000000000000000dEaD, amount), "Trap purchase failed");
 
-        require(roboToken.transfer(address(0), amount), "Burn failed");
 
-        emit TrapPurchased(msg.sender, amount, raceId);
+        emit TrapPurchased(msg.sender, amount, raceId,robot);
     }
     function findActiveRaceForRobot(address robot) public view returns (uint256) {
         for (uint256 i = raceCounter; i > 0; i--) {

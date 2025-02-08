@@ -87,8 +87,11 @@ export async function generateTwitterSpeedScore(twitterUsername: string) {
   console.log(`Analyzing username: ${twitterUsername}`);
   const profileData = await getProfileOfAnAccount(twitterUsername);
   const tweetsData = await getTweetsOfAnAccount(twitterUsername);
+  console.log({ profileData });
+  console.log({ tweetsData });
+  // const analysis = await performAIAnalysis(profileData, tweetsData);
 
-  const analysis = await performAIAnalysis(profileData, tweetsData);
-
-  return analysis;
+  // return analysis;
 }
+
+generateTwitterSpeedScore("0xShiyasmohd")

@@ -1,7 +1,11 @@
 [
   {
     "inputs": [
-      { "internalType": "address", "name": "_roboToken", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "_roboToken",
+        "type": "address"
+      }
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
@@ -157,6 +161,12 @@
         "internalType": "uint256",
         "name": "raceId",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "robot",
+        "type": "address"
       }
     ],
     "name": "TrapPurchased",
@@ -165,28 +175,54 @@
   {
     "inputs": [],
     "name": "ROBOT_SHARE",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "STAKERS_SHARE",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "STAKING_BUFFER_TIME",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "robot", "type": "address" },
-      { "internalType": "uint256", "name": "amount", "type": "uint256" }
+      {
+        "internalType": "address",
+        "name": "robot",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
     ],
     "name": "addStake",
     "outputs": [],
@@ -195,8 +231,21 @@
   },
   {
     "inputs": [
-      { "internalType": "uint256", "name": "raceId", "type": "uint256" },
-      { "internalType": "uint256", "name": "amount", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "raceId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "robot",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
     ],
     "name": "buyTrap",
     "outputs": [],
@@ -205,8 +254,16 @@
   },
   {
     "inputs": [
-      { "internalType": "uint256", "name": "raceId", "type": "uint256" },
-      { "internalType": "address", "name": "winner", "type": "address" }
+      {
+        "internalType": "uint256",
+        "name": "raceId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "winner",
+        "type": "address"
+      }
     ],
     "name": "completeRace",
     "outputs": [],
@@ -215,9 +272,21 @@
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "robot1", "type": "address" },
-      { "internalType": "address", "name": "robot2", "type": "address" },
-      { "internalType": "uint256", "name": "raceTime", "type": "uint256" }
+      {
+        "internalType": "address",
+        "name": "robot1",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "robot2",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "raceTime",
+        "type": "uint256"
+      }
     ],
     "name": "createRace",
     "outputs": [],
@@ -226,10 +295,20 @@
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "robot", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "robot",
+        "type": "address"
+      }
     ],
     "name": "findActiveRaceForRobot",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
@@ -239,17 +318,41 @@
     "outputs": [
       {
         "components": [
-          { "internalType": "address", "name": "robot1", "type": "address" },
-          { "internalType": "address", "name": "robot2", "type": "address" },
-          { "internalType": "bool", "name": "isActive", "type": "bool" },
-          { "internalType": "bool", "name": "isCompleted", "type": "bool" },
-          { "internalType": "address", "name": "winner", "type": "address" },
+          {
+            "internalType": "address",
+            "name": "robot1",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "robot2",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "isActive",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "isCompleted",
+            "type": "bool"
+          },
+          {
+            "internalType": "address",
+            "name": "winner",
+            "type": "address"
+          },
           {
             "internalType": "uint256",
             "name": "totalPrizePool",
             "type": "uint256"
           },
-          { "internalType": "uint256", "name": "raceTime", "type": "uint256" },
+          {
+            "internalType": "uint256",
+            "name": "raceTime",
+            "type": "uint256"
+          },
           {
             "internalType": "uint256",
             "name": "stakingEndTime",
@@ -266,18 +369,54 @@
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "robot", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "robot",
+        "type": "address"
+      }
     ],
     "name": "getRobotData",
     "outputs": [
-      { "internalType": "uint256", "name": "totalStake", "type": "uint256" },
-      { "internalType": "uint256", "name": "minimumStake", "type": "uint256" },
-      { "internalType": "address[]", "name": "stakers", "type": "address[]" },
-      { "internalType": "string", "name": "basename", "type": "string" },
-      { "internalType": "string", "name": "twitter", "type": "string" },
-      { "internalType": "string", "name": "tokenName", "type": "string" },
-      { "internalType": "address", "name": "tokenAddress", "type": "address" },
-      { "internalType": "uint256", "name": "level", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "totalStake",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "minimumStake",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address[]",
+        "name": "stakers",
+        "type": "address[]"
+      },
+      {
+        "internalType": "string",
+        "name": "basename",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "twitter",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "tokenName",
+        "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "tokenAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "level",
+        "type": "uint256"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -285,34 +424,82 @@
   {
     "inputs": [],
     "name": "raceCounter",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "name": "races",
     "outputs": [
-      { "internalType": "address", "name": "robot1", "type": "address" },
-      { "internalType": "address", "name": "robot2", "type": "address" },
-      { "internalType": "bool", "name": "isActive", "type": "bool" },
-      { "internalType": "bool", "name": "isCompleted", "type": "bool" },
-      { "internalType": "address", "name": "winner", "type": "address" },
       {
         "internalType": "uint256",
-        "name": "totalPrizePool",
+        "name": "",
         "type": "uint256"
-      },
-      { "internalType": "uint256", "name": "raceTime", "type": "uint256" },
-      { "internalType": "uint256", "name": "stakingEndTime", "type": "uint256" }
+      }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "robot", "type": "address" },
-      { "internalType": "uint256", "name": "minimumStake", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "races",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "robot1",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "robot2",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "isActive",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "isCompleted",
+        "type": "bool"
+      },
+      {
+        "internalType": "address",
+        "name": "winner",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalPrizePool",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "raceTime",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "stakingEndTime",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "robot",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "minimumStake",
+        "type": "uint256"
+      }
     ],
     "name": "registerRobot",
     "outputs": [],
@@ -320,9 +507,21 @@
     "type": "function"
   },
   {
-    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "name": "registeredRobots",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
@@ -330,29 +529,71 @@
     "inputs": [],
     "name": "roboToken",
     "outputs": [
-      { "internalType": "contract IERC20", "name": "", "type": "address" }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
-    "name": "robots",
-    "outputs": [
-      { "internalType": "uint256", "name": "totalStake", "type": "uint256" },
-      { "internalType": "uint256", "name": "minimumStake", "type": "uint256" },
-      { "internalType": "string", "name": "basename", "type": "string" },
-      { "internalType": "string", "name": "twitter", "type": "string" },
-      { "internalType": "string", "name": "tokenName", "type": "string" },
-      { "internalType": "address", "name": "tokenAddress", "type": "address" },
-      { "internalType": "uint256", "name": "level", "type": "uint256" }
+      {
+        "internalType": "contract IERC20",
+        "name": "",
+        "type": "address"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "robot", "type": "address" },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "robots",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "totalStake",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "minimumStake",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "basename",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "twitter",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "tokenName",
+        "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "tokenAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "level",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "robot",
+        "type": "address"
+      },
       {
         "internalType": "uint256",
         "name": "newMinimumStake",
@@ -366,12 +607,36 @@
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "robot", "type": "address" },
-      { "internalType": "string", "name": "basename", "type": "string" },
-      { "internalType": "string", "name": "twitter", "type": "string" },
-      { "internalType": "string", "name": "tokenName", "type": "string" },
-      { "internalType": "address", "name": "tokenAddress", "type": "address" },
-      { "internalType": "uint256", "name": "level", "type": "uint256" }
+      {
+        "internalType": "address",
+        "name": "robot",
+        "type": "address"
+      },
+      {
+        "internalType": "string",
+        "name": "basename",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "twitter",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "tokenName",
+        "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "tokenAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "level",
+        "type": "uint256"
+      }
     ],
     "name": "updateRobotData",
     "outputs": [],

@@ -5,6 +5,7 @@ import {
   TrapPurchased,
   RaceCreated,
   RaceCompleted,
+  UpdateRobotDataCall,
 } from "../generated/RobotRaceManager/RobotRaceManager";
 import { Robot, Race, Staker, Stake, Trap } from "../generated/schema";
 import { BigInt, Address } from "@graphprotocol/graph-ts";
@@ -96,6 +97,20 @@ export function handleTrapPurchased(event: TrapPurchased): void {
   trap.race = event.params.raceId.toString();
   trap.buyer = event.params.buyer.toHexString();
   trap.amount = event.params.amountBurned;
+  trap.robot = event.params.robot.toHexString();
   trap.timestamp = event.block.timestamp;
   trap.save();
+}
+export function handleUpdateRobotData(call: UpdateRobotDataCall): void {
+  let robotId = call.inputs.robot.toHexString();
+  let robot = Robot.load(robotId);
+
+  if (robot) {
+    robot.basename = call.inputs.basename;
+    robot.twitter = call.inputs.twitter;
+    robot.tokenName = call.inputs.tokenName;
+    robot.tokenAddress = call.inputs.tokenAddress.toHexString();
+    robot.level = call.inputs.level;
+    robot.save();
+  }
 }
