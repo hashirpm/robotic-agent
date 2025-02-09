@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="mark_rover">
+
+    <link name="base_footprint">
+
+    </link>
+
+    <xacro:include filename="$(find ethbot)/urdf/controller1_gazebo.xacro"/>
+    
+    
+    <!-- body properties -->
+    <xacro:property name="const"     value="0.083"/>
+    <xacro:property name="body_mass" value="3.0"/>
+    <xacro:property name="height"    value="0.1"/>
+    <xacro:property name="width"     value="0.8"/>
+    <xacro:property name="depth"     value="0.7"/>
+    <link name="base_link">
+        <visual>
+            <geometry>
+                <box size="${width} ${depth} ${height}" />
+            </geometry>
+            <material name="Red">
+                <color rgba="1.0 0.5 0.5 1.0"/>
+            </material>
+        </visual>
+        <collision>
+            <geometry>
+                <box size="${width} ${depth} ${height}" />
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="1.0"/>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <inertia ixx="${const*body_mass*(height*height + depth*depth)}" ixy="0.0" ixz="0.0" 
+                     iyy="${const*body_mass*(height*height + width*width)}" iyz="0.0" 
+                     izz="${const*body_mass*(width*width + depth*depth)}"/>
+        </inertial>
+    </link>
+
+    <gazebo reference="base_link">
+        <material>Gazebo/Red</material>
+    </gazebo>
+
+    <joint name="base_joint" type="fixed"> 
+        <origin xyz="0.0 0.0 0.45" rpy="0.0 0.0 0.0"/>
+        <parent link="base_footprint"/>
+        <child link="base_link"/>
+        <axis xyz="0.0 0.0 0.0"/>
+    </joint>
+
+    
+<!-- the wheels space -->
+<xacro:macro name="wheel" params="name x y model_name">
+    <link name="wheel_${name}">
+        <visual>
+            <geometry>
+                <mesh filename="package://ethbot/meshes/${model_name}.stl" scale="0.005 0.005 0.005"/>
+            </geometry>
+            <material name="Black">
+                <color rgba="0.0 0.0 0.0 1.0"/>
+            </material>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="package://ethbot/meshes/${model_name}.stl" scale="0.005 0.005 0.005"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="0.5"/>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <inertia ixx=".007" ixy="0.0" ixz="0.0" 
+                     iyy=".007" iyz="0.0" 
+                     izz=".0068"/>
+        </inertial>
+    </link>
+
+
+    <gazebo reference="wheel_${name}">
+        <material>Gazebo/Gray</material>
+    </gazebo>
+
+
+    <joint name="joint_${name}" type="continuous">
+        <origin xyz="${x} ${y} 0.0" rpy="0.0 0.0 0.0"/>
+        <parent link="base_link"/>
+        <child link="wheel_${name}"/>
+        <axis xyz="0.0 1.0 0.0"/>
+        <limit effort="1000" velocity="2000"/>
+        <dynamics damping="2.0" friction="2.0"/>
+        
+    </joint>
+</xacro:macro>
+
+<!-- making wheels -->
+<xacro:wheel name="front_right" x="-0.250" y="0.40" model_name="right_tire"/>
+<xacro:wheel name="front_left" x="-0.250" y="-0.40" model_name="left_tire"/>
+<xacro:wheel name="rear_right" x="0.250" y="0.40" model_name="right_tire"/>
+<xacro:wheel name="rear_left" x="0.250" y="-0.40" model_name="left_tire"/>
+
+</robot>

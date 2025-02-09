@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <gazebo reference="base_link">
+        <material>Gazebo/Red</material>
+        <!-- <material>MyCustomMaterial</material> -->
+    </gazebo>
+    <gazebo reference="wheel_front_left">
+        <material>Gazebo/Gray</material>
+    </gazebo>
+    <gazebo reference="wheel_front_right">
+        <material>Gazebo/Gray</material>
+    </gazebo>
+    <gazebo reference="wheel_rear_left">
+        <material>Gazebo/Gray</material>
+    </gazebo>
+    <gazebo reference="wheel_rear_right">
+        <material>Gazebo/Gray</material>
+    </gazebo>
+    <gazebo>
+        <plugin name="gazebo_base_controller" filename="libgazebo_ros_skid_steer_drive.so">
+            <updateRate>15.0</updateRate>
+            <!-- control rate -->
+            <robotNamespace>/robot1</robotNamespace>
+            <leftFrontJoint>joint_front_left</leftFrontJoint>
+            <rightFrontJoint>joint_front_right</rightFrontJoint>
+            <leftRearJoint>joint_rear_left</leftRearJoint>
+            <rightRearJoint>joint_rear_right</rightRearJoint>
+            <wheelSeperation>0.887</wheelSeperation>
+            <wheelDiameter>0.329</wheelDiameter>
+            <robotBaseFrame>base_link</robotBaseFrame>
+            <torque>20</torque>
+            <commandTopic>cmd_vel1</commandTopic>
+            <robotBaseFrame>base_footprint</robotBaseFrame>
+            <publishWheelTF>false</publishWheelTF>
+            <publishOdom>false</publishOdom>
+            <publishWheelJointState>true</publishWheelJointState>
+            <covariance_x>0.0001</covariance_x>
+            <covariance_y>0.0001</covariance_y>
+            <covariance_yaw>0.01</covariance_yaw>
+
+        </plugin>
+    </gazebo>
+</robot>

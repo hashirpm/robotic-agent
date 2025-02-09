@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<launch>
+
+    <!-- Load the first robot -->
+    <group ns="rover1">
+        <param name="robot_description" command="$(find xacro)/xacro $(find ethbot)/urdf/rover1.urdf.xacro"/>
+        
+        <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+            <param name="publish_frequency" type="double" value="50.0"/>
+        </node>
+
+        <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher"/>
+
+        <!-- Load and start controller for rover1 -->
+        <node name="controller_spawner_rover1" pkg="controller_manager" type="spawner" respawn="false"
+              output="screen" args="diff_drive_controller joint_state_controller --namespace=/rover1"/>
+
+        <node pkg="gazebo_ros" type="spawn_model" name="spawn_rover1" respawn="false" output="screen"
+              args="-urdf -model rover1 -param robot_description -x 0 -y 1 -z 0"/>
+    </group>
+
+    <!-- Load the second robot -->
+    <group ns="rover2">
+        <param name="robot_description" command="$(find xacro)/xacro $(find ethbot)/urdf/rover2.urdf.xacro"/>
+        
+        <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+            <param name="publish_frequency" type="double" value="50.0"/>
+        </node>
+
+        <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher"/>
+
+        <!-- Load and start controller for rover2 -->
+        <node name="controller_spawner_rover2" pkg="controller_manager" type="spawner" respawn="false"
+              output="screen" args="diff_drive_controller joint_state_controller --namespace=/rover2"/>
+
+        <node pkg="gazebo_ros" type="spawn_model" name="spawn_rover2" respawn="false" output="screen"
+              args="-urdf -model rover2 -param robot_description -x 0 -y -1 -z 0"/>
+    </group>
+
+    <!-- Start Gazebo -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="paused" value="false"/>
+        <arg name="use_sim_time" value="true"/>
+        <arg name="gui" value="true"/>
+        <arg name="headless" value="false"/>
+        <arg name="debug" value="false"/>
+    </include>
+
+</launch>
