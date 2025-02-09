@@ -20,8 +20,7 @@ import { updateWinner } from "../agent-kit/robo-agent";
 import { createNewTask } from "../eigenlayer-avs/operator/createNewTasks";
 import { roboticAgentServiceManager } from "../eigenlayer-avs/operator";
 
-const GRAPH_NETWORK_QUERY_URL =
-  "https://api.studio.thegraph.com/query/62284/robot-race/version/latest";
+const GRAPH_NETWORK_QUERY_URL = process.env.GRAPH_NETWORK_QUERY_URL!;
 
 // Track the latest timestamps for traps, stakes, and races
 let lastTrapTimestamp: BigInt = BigInt(0);

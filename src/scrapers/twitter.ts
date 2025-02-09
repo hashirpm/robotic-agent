@@ -4,6 +4,7 @@ import { Cookie } from "tough-cookie"; // Add this import
 import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
+import { getAPIKey } from "../nillion-helpers/api-key";
 
 
 dotenv.config();
@@ -16,8 +17,8 @@ const loginAndSetCookies = async () => {
     await clearCookies();
     // Login with username and password
     await scraper.login(
-      process.env.TWITTER_USERNAME!,
-      process.env.TWITTER_PASSWORD!
+     await getAPIKey("twitterUsername") || process.env.TWITTER_USERNAME!,
+      await getAPIKey("twitterPassword") || process.env.TWITTER_PASSWORD!
     );
 
     // Check if successfully logged in

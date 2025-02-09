@@ -19,6 +19,7 @@ import * as dotenv from "dotenv";
 import * as fs from "fs";
 import * as readline from "readline";
 import { getPrompt } from "../nillion-helpers/ai-config";
+import { getAPIKey } from "../nillion-helpers/api-key";
 
 dotenv.config();
 let llm: any;
@@ -29,9 +30,9 @@ export function validateEnvironment(): void {
 
   // Check required variables
   const requiredVars = [
-    "XAI_API_KEY",
-    "CDP_API_KEY_NAME",
-    "CDP_API_KEY_PRIVATE_KEY",
+    "NILLION_API_BASE_URL",
+    "NILLION_ORG_DID",
+    "NILLION_ORG_SECRET",
   ];
   requiredVars.forEach((varName) => {
     if (!process.env[varName]) {
@@ -63,7 +64,7 @@ export async function initializeAgent() {
   try {
     llm = new ChatOpenAI({
       model: "gpt-4o-mini",
-      apiKey: process.env.OPENAI_API_KEY,
+      apiKey: await getAPIKey("openai") || process.env.OPENAI_API_KEY,
     });
 
     let walletDataStr: string | null = null;
@@ -81,13 +82,14 @@ export async function initializeAgent() {
 
     // Configure CDP Wallet Provider
     config = {
-      apiKeyName: process.env.CDP_API_KEY_NAME,
-      apiKeyPrivateKey: process.env.CDP_API_KEY_PRIVATE_KEY?.replace(
-        /\\n/g,
-        "\n"
-      ),
+      apiKeyName:
+        (await getAPIKey("cdpApiKeyName")) || process.env.CDP_API_KEY_NAME,
+      apiKeyPrivateKey:
+        (await getAPIKey("apiKeyPrivateKey")) ||
+        process.env.CDP_API_KEY_PRIVATE_KEY?.replace(/\\n/g, "\n"),
       cdpWalletData: walletDataStr || undefined,
       networkId: process.env.NETWORK_ID || "base-sepolia",
+      mnemonicPhrase: process.env.CDP_WALLET_SEED,
     };
 
     const walletProvider = await CdpWalletProvider.configureWithWallet(config);
@@ -102,18 +104,18 @@ export async function initializeAgent() {
         erc20ActionProvider(),
         basenameActionProvider(),
         cdpApiActionProvider({
-          apiKeyName: process.env.CDP_API_KEY_NAME,
-          apiKeyPrivateKey: process.env.CDP_API_KEY_PRIVATE_KEY?.replace(
-            /\\n/g,
-            "\n"
-          ),
+          apiKeyName:
+            (await getAPIKey("cdpApiKeyName")) || process.env.CDP_API_KEY_NAME,
+          apiKeyPrivateKey:
+            (await getAPIKey("apiKeyPrivateKey")) ||
+            process.env.CDP_API_KEY_PRIVATE_KEY?.replace(/\\n/g, "\n"),
         }),
         cdpWalletActionProvider({
-          apiKeyName: process.env.CDP_API_KEY_NAME,
-          apiKeyPrivateKey: process.env.CDP_API_KEY_PRIVATE_KEY?.replace(
-            /\\n/g,
-            "\n"
-          ),
+          apiKeyName:
+            (await getAPIKey("cdpApiKeyName")) || process.env.CDP_API_KEY_NAME,
+          apiKeyPrivateKey:
+            (await getAPIKey("apiKeyPrivateKey")) ||
+            process.env.CDP_API_KEY_PRIVATE_KEY?.replace(/\\n/g, "\n"),
         }),
       ],
     });

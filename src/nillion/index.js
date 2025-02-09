@@ -257,11 +257,6 @@ app.get("/ai-config", extractOrgCredentials, async (req, res) => {
   }
 });
 
-// Start server
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () =>
-  console.log(`Robot Vault Server running on port ${PORT}`)
-);
 
 app.post("/addRobotStake", extractOrgCredentials, async (req, res) => {
   try {
@@ -317,7 +312,6 @@ app.post("/addRobotTrap", extractOrgCredentials, async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 });
-
 
 app.post("/raceLog", extractOrgCredentials, async (req, res) => {
   try {
@@ -426,3 +420,8 @@ app.post("/getDataOfARobot", extractOrgCredentials, async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 });
+
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () =>
+  console.log(`Robot Vault Server running on port ${PORT}`)
+);

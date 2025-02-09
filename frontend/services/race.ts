@@ -1,7 +1,6 @@
 import axios from "axios";
 
-const GRAPH_NETWORK_QUERY_URL =
-  "https://api.studio.thegraph.com/query/62284/robot-race/version/latest";
+const GRAPH_NETWORK_QUERY_URL = process.env.NEXT_PUBLIC_GRAPH_NETWORK_QUERY_URL || "";
 
 export async function getUpcomingRaceData() {
   const currentTimestamp = Math.floor(Date.now() / 1000); // Get current Unix timestamp

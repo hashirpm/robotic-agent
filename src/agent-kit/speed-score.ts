@@ -5,6 +5,7 @@ import {
   getTweetsOfAnAccount,
 } from "../scrapers/twitter";
 import { getPrompt } from "../nillion-helpers/ai-config";
+import { getAPIKey } from "../nillion-helpers/api-key";
 
 async function performAIAnalysis(
   profile: any,
@@ -13,7 +14,7 @@ async function performAIAnalysis(
 ) {
   const llm = new ChatOpenAI({
     model: "meta-llama/Llama-3.3-70B-Instruct",
-    apiKey: process.env.HYPERBOLIC_API_KEY,
+    apiKey: (await getAPIKey("hyperBolicApiKey")) || process.env.HYPERBOLIC_API_KEY,
     configuration: {
       baseURL: "https://api.hyperbolic.xyz/v1",
     },
