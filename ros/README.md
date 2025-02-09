@@ -1,4 +1,4 @@
-# Multi-Rover Simulation in Gazebo with ROS
+# ROBOAGENTIC BATTLE ROS SIMULATION
 
 This project is an AI-powered robotic racing game where autonomous robots, controlled via ROS and simulated in Gazebo, dynamically adjust their speed and energy using on-chain and off-chain data stored in Nillion Secret Vaults, while players can strategically influence the race by staking tokens and setting traps, with the winner determined by a smart contract and rewards distributed accordingly. 
 
