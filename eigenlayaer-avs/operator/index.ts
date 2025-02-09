@@ -129,6 +129,12 @@ const monitorNewTasks = async () => {
         await signAndRespondToTask(taskIndex, task.taskCreatedBlock, task.username, 10);
     });
 
+    roboticAgentServiceManager.on("TaskResponded", async (taskIndex: number, task: any, score: number, operator: string) => {
+
+        console.log(`Task responded: Username - ${task.username}, Score - ${score}, Operator - ${operator}`);
+
+    });
+
     console.log("Monitoring for new tasks...");
 };
 
