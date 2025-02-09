@@ -65,7 +65,7 @@ export async function fetchNewTraps() {
         const race_id = trap.race.id;
         const robot_id = trap.robot.id;
         const response = await fetch(
-          `${process.env.NILLION_API_URL}/addRobotStake`,
+          `${process.env.NILLION_API_URL}/addRobotTrap`,
           {
             method: "POST",
             headers: {
