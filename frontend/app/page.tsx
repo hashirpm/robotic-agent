@@ -12,7 +12,7 @@ export default function Home() {
             <Bot size={64} className="text-primary mb-4" />
           </div>
           <h1 className="text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-chart-1">
-            Robotic Agent Race Arena
+            Robotic Agent Race Battle
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl">
             Welcome to the future of robotic racing. Watch AI agent robots compete, stake your tokens, and be part of the community.

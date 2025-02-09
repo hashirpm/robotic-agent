@@ -77,23 +77,24 @@ export default function LiveRacePage() {
     if (robot1Stats.energy <= 0 && robot2Stats.energy <= 0) return;
 
     try {
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+
+      if (process.env.NEXT_PUBLIC_NILLION_ORG_SECRET) {
+        headers["secretKey"] = process.env.NEXT_PUBLIC_NILLION_ORG_SECRET;
+      }
+
+      if (process.env.NEXT_PUBLIC_NILLION_ORG_DID) {
+        headers["orgDid"] = process.env.NEXT_PUBLIC_NILLION_ORG_DID;
+      }
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_NILLION_API_BASE_URL}/robotLog`,
+        `${process.env.NEXT_PUBLIC_NILLION_API_BASE_URL}/getLatestRaceLog`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers,
           body: JSON.stringify({
             raceId: races.id,
-            robot1Id: races.robot1.id,
-            robot2Id: races.robot2.id,
-            robot1Energy: robot1Stats.energy,
-            robot2Energy: robot2Stats.energy,
-            robot1Position: robot1Stats.position,
-            robot2Position: robot2Stats.position,
-            robot1Speed: robot1Stats.speed,
-            robot2Speed: robot2Stats.speed,
           }),
         }
       );
@@ -123,7 +124,7 @@ export default function LiveRacePage() {
   useEffect(() => {
     const fetchData = async () => {
       const race = await getLiveRaceData();
-      if (race===null) {
+      if (race === null) {
         router.push("/no-race");
       }
       const formattedRace = {
@@ -159,18 +160,25 @@ export default function LiveRacePage() {
       setRaces(formattedRace);
     };
     const fetchStats = async () => {
-      // Fetch robot initial stats from the server
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+
+      if (process.env.NEXT_PUBLIC_NILLION_ORG_SECRET) {
+        headers["secretKey"] = process.env.NEXT_PUBLIC_NILLION_ORG_SECRET;
+      }
+
+      if (process.env.NEXT_PUBLIC_NILLION_ORG_DID) {
+        headers["orgDid"] = process.env.NEXT_PUBLIC_NILLION_ORG_DID;
+      }
+      // Fetch robot initial stats from the nillion
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_NILLION_API_BASE_URL}/robotInitialLog`,
+        `${process.env.NEXT_PUBLIC_NILLION_API_BASE_URL}/getLatestRaceLog`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers,
           body: JSON.stringify({
             raceId: races?.id,
-            robot1Id: races?.robot1?.id || "0x0000...0000",
-            robot2Id: races?.robot2?.id || "0x0000...0000",
           }),
         }
       );
@@ -214,31 +222,6 @@ export default function LiveRacePage() {
       functionName: "buyTrap",
       args: [raceId, robot, amount],
     });
-    //reduce the energy of the robot selected by the amount of the trap
-    // Reduce energy based on selected trap drain percentage
-    if (selectedTrap !== null) {
-      const drainPercentage = traps[selectedTrap].drain; // trap IDs start at 1
-      if (robot === races?.robot1.id) {
-        const drainAmount = Math.max(
-          0,
-          robot1Stats.energy * (drainPercentage / 100)
-        );
-        setRobot1Stats((prev) => ({
-          ...prev,
-          energy: Math.max(0, prev.energy - drainAmount),
-        }));
-      } else if (robot === races?.robot2.id) {
-        const drainAmount = Math.max(
-          0,
-          robot2Stats.energy * (drainPercentage / 100)
-        );
-
-        setRobot2Stats((prev) => ({
-          ...prev,
-          energy: Math.max(0, prev.energy - drainAmount),
-        }));
-      }
-    }
   };
   return (
     <>
@@ -302,7 +285,7 @@ export default function LiveRacePage() {
                             />
                           </div>
                           <span className="text-sm">
-                            Speed: {robot.stats.speed.toFixed(1)} km/h
+                            Speed: {robot.stats.speed.toFixed(1)} 
                           </span>
                         </div>
                       </div>
@@ -316,7 +299,7 @@ export default function LiveRacePage() {
                             />
                           </div>
                           <span className="text-sm">
-                            Energy: {robot.stats.energy.toFixed(1)}%
+                            Energy: {robot.stats.energy.toFixed(1)}
                           </span>
                         </div>
                       </div>

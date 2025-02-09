@@ -275,7 +275,11 @@ async function evaluateAndParticipate(race: any) {
 async function analyzeRaceOpportunity(race: any) {
   // Get price data from Pyth
   const priceStream = await agent.stream(
-    { messages: [new HumanMessage("Get ROBO/USD price from Pyth")] },
+    {
+      messages: [
+        new HumanMessage(`Get ${race.opponent.tokenAddress} price from Pyth`),
+      ],
+    },
     config
   );
 
@@ -348,10 +352,10 @@ async function participateInRace(raceId: string, opponent: string) {
   }
 
   // Deploy traps if needed
-  await deployDefensiveTraps( raceId, opponent);
+  await deployDefensiveTraps(raceId, opponent);
 
   // Start monitoring
-  await startRaceMonitoring( raceId);
+  await startRaceMonitoring(raceId);
 }
 async function deployDefensiveTraps(raceId: string, opponent: string) {
   const trapAmount = await calculateOptimalTrapAmount(opponent);

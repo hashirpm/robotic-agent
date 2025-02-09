@@ -86,7 +86,7 @@ export async function getLiveRaceData() {
                 where: { 
                     isCompleted: false, 
                     isActive: true,
-                    raceTime_gt: ${currentTimestamp} 
+                    raceTime_eq: ${currentTimestamp} 
                 },
                 orderBy: raceTime,
                 first: 1
