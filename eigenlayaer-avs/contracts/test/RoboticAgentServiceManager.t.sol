@@ -274,7 +274,7 @@ contract RoboticAgentTaskManagerSetup is Test {
         bytes memory signedTask = abi.encode(operators, signatures, uint32(block.number));
 
         IRoboticAgentServiceManager(roboticAgentDeployment.roboticAgentServiceManager).respondToTask(
-            task, referenceTaskIndex, signedTask
+            task, score, referenceTaskIndex, signedTask
         );
     }
 }
@@ -424,12 +424,12 @@ contract RespondToTask is RoboticAgentTaskManagerSetup {
         }
     }
 
-    function testRespondToTask() public {
+    function testRespondToTask(uint32 score) public {
         string memory taskName = "TestTask";
         IRoboticAgentServiceManager.Task memory newTask = sm.createNewTask(taskName);
         uint32 taskIndex = sm.latestTaskNum() - 1;
 
-        bytes32 messageHash = keccak256(abi.encodePacked("Hello, ", taskName));
+        bytes32 messageHash = keccak256(abi.encodePacked(score));
         bytes32 ethSignedMessageHash = messageHash.toEthSignedMessageHash();
         bytes memory signature = signWithSigningKey(operators[0], ethSignedMessageHash); // TODO: Use signing key after changes to service manager
 
@@ -441,6 +441,6 @@ contract RespondToTask is RoboticAgentTaskManagerSetup {
         bytes memory signedTask = abi.encode(operatorsMem, signatures, uint32(block.number));
 
         vm.roll(block.number+1);
-        sm.respondToTask(newTask, taskIndex, signedTask);
+        sm.respondToTask(newTask, score, taskIndex, signedTask);
     }
 }

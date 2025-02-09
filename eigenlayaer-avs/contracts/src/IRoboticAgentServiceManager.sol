@@ -23,11 +23,12 @@ interface IRoboticAgentServiceManager {
     ) external view returns (bytes memory);
 
     function createNewTask(
-        string memory name
+        string memory username
     ) external returns (Task memory);
 
     function respondToTask(
         Task calldata task,
+        uint32 score,
         uint32 referenceTaskIndex,
         bytes calldata signature
     ) external;
