@@ -18,6 +18,7 @@ import { ChatOpenAI } from "@langchain/openai";
 import * as dotenv from "dotenv";
 import * as fs from "fs";
 import * as readline from "readline";
+import { getPrompt } from "../nillion-helpers/ai-config";
 
 dotenv.config();
 let llm: any;
@@ -123,39 +124,13 @@ export async function initializeAgent() {
     const agentConfig = {
       configurable: { thread_id: "ROBO RACE AI AGENT" },
     };
-
+    const modifierMessage = await getPrompt("agentMessageModifier");
     // Create React Agent using the LLM and CDP AgentKit tools
     agent = createReactAgent({
       llm,
       tools,
       checkpointSaver: memory,
-      messageModifier: `
-        You are an AI agent operating on the Base Sepolia testnet using Coinbase Developer Platform AgentKit.
-
-        Smart Contract Address = ${process.env.ROBO_RACE_CONTRACT_ADDRESS}
-        You can interact with the Robo Racing smart contract to participate or fetch details to perform your actions. 
-        You have access to read and write functions to interact with the contract.
-
-        Before performing any action:
-        1. Always verify the current network ID (should be base-sepolia)
-        2. Check wallet balance and request funds from faucet if needed
-        3. Verify transaction status after execution
-        4. Provide accurate transaction hashes and confirmation details
-        5. Sign transactions with your CDP MPC Wallet if needed
-        
-        For operations:
-        - Use 18 decimals for ERC20 tokens
-        - Set reasonable total supplies (e.g., 1,000,000)
-        - Verify basename availability before registration
-        - Report actual transaction status and hashes
-        
-        Be precise and concise in responses, focusing on key details:
-        - Wallet address
-        - Network confirmation
-        - Transaction hash (when applicable)
-        - Operation status
-        - Any errors or issues encountered
-        `,
+      messageModifier: modifierMessage,
     });
 
     // Save wallet data
@@ -185,7 +160,7 @@ async function processResponse(chunk: any): Promise<string> {
 }
 export async function registerWalletBasename() {
   try {
-    const inputPrompt = "Register a basename if your wallet is not registered";
+    const inputPrompt = await getPrompt("regsiterBasePrompt");
     const stream = await agent.stream(
       { messages: [new HumanMessage(inputPrompt)] },
       config
@@ -205,7 +180,9 @@ export async function registerWalletBasename() {
 
 export async function updateRobotMetadata(robotData: any) {
   try {
-    const userInput = `Update robot metadata with:
+    const inputPrompt = await getPrompt("updateRobotMetadata");
+    const userInput = `${inputPrompt} 
+    Update robot metadata with:
     basename: ${robotData.basename}
     twitter: ${robotData.twitter}
     tokenName: ${robotData.tokenName}
@@ -231,10 +208,10 @@ export async function updateRobotMetadata(robotData: any) {
 
 export async function scanForRaceOpportunities() {
   try {
-    const userInput = `Get all upcoming races`;
+    const inputPrompt = await getPrompt("raceScanPrompt");
 
     const stream = await agent.stream(
-      { messages: [new HumanMessage(userInput)] },
+      { messages: [new HumanMessage(inputPrompt)] },
       config
     );
     const races = [];
@@ -263,11 +240,12 @@ async function evaluateAndParticipate(race: any) {
   }
 }
 async function analyzeRaceOpportunity(race: any) {
-  // Get price data from Pyth
+  const inputPrompt = await getPrompt("pricePrompt");
   const priceStream = await agent.stream(
     {
       messages: [
-        new HumanMessage(`Get ${race.opponent.tokenAddress} price from Pyth`),
+        new HumanMessage(`${inputPrompt} 
+        ${race.opponent.tokenAddress} `),
       ],
     },
     config
@@ -280,9 +258,9 @@ async function analyzeRaceOpportunity(race: any) {
       priceData = parsePrice(response);
     }
   }
-
+  const inputAnalysisPrompt = await getPrompt("raceAnalysisPrompt");
   // Analyze using LLM
-  const analysisPrompt = `Analyze race opportunity with:
+  const analysisPrompt = `${inputAnalysisPrompt}
     Price: ${priceData.price}
     Race: ${JSON.stringify(race)}
   `;
@@ -332,8 +310,9 @@ function extractTrapAmount(response: string) {
 }
 async function participateInRace(raceId: string, opponent: string) {
   // Add stake to race
+  const inputPrompt = await getPrompt("participateInRacePrompt");
   const stakeStream = await agent.stream(
-    { messages: [new HumanMessage(`Add stake to race ${raceId}`)] },
+    { messages: [new HumanMessage(`${inputPrompt} ${raceId}`)] },
     config
   );
 
@@ -349,12 +328,16 @@ async function participateInRace(raceId: string, opponent: string) {
 }
 async function deployDefensiveTraps(raceId: string, opponent: string) {
   const trapAmount = await calculateOptimalTrapAmount(opponent);
+  const inputPrompt = await getPrompt("trapPrompt");
 
   const trapStream = await agent.stream(
     {
       messages: [
         new HumanMessage(
-          `Buy trap for race ${raceId} targeting ${opponent} with amount ${trapAmount}`
+          `${inputPrompt} 
+         RaceID- ${raceId} 
+         Opponent - ${opponent} 
+         Amount - ${trapAmount}`
         ),
       ],
     },
@@ -368,8 +351,9 @@ async function deployDefensiveTraps(raceId: string, opponent: string) {
 
 async function calculateOptimalTrapAmount(opponent: string) {
   // Get opponent data and analyze using LLM
+  const inputPrompt = await getPrompt("optimalTra");
   const analysis = await llm.invoke(`
-      Calculate optimal trap amount for opponent by checking the level of the opponent robot:
+    ${inputPrompt}
       Opponent: ${opponent}
     `);
 
@@ -377,8 +361,14 @@ async function calculateOptimalTrapAmount(opponent: string) {
 }
 
 async function startRaceMonitoring(raceId: string) {
+  const inputPrompt = await getPrompt("monitorRacePrompt");
   const monitorStream = await agent.stream(
-    { messages: [new HumanMessage(`Monitor race ${raceId} for completion`)] },
+    {
+      messages: [
+        new HumanMessage(`${inputPrompt} 
+      Race ID - ${raceId}`),
+      ],
+    },
     config
   );
 
@@ -392,7 +382,8 @@ async function startRaceMonitoring(raceId: string) {
 
 export async function updateWinner(raceId: string, winner: string) {
   try {
-    const userInput = `Update the winner in the smart contract with below details by calling completeRace function with the following parameters:
+    const inputPrompt = await getPrompt("updateWinnerPrompt");
+    const userInput = `${inputPrompt}
     raceId: ${raceId}
     winner: ${winner}`;
 
