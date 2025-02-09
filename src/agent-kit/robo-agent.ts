@@ -60,19 +60,9 @@ const WALLET_DATA_FILE = "wallet_data.txt";
 
 export async function initializeAgent() {
   try {
-    // });
     llm = new ChatOpenAI({
-      modelName: "meta-llama/Llama-3.3-70B-Instruct",
-      apiKey: process.env.HYPERBOLIC_API_KEY, // you can input your API key in plaintext, but this is not recommended
-      configuration: {
-        baseURL: "https://api.hyperbolic.xyz/v1",
-        defaultHeaders: {
-          "Content-Type": "application/json",
-        },
-      },
-      maxTokens: 2048, // specifies the maximum number of tokens to generate
-      temperature: 0.7, // specifies the randomness of the output
-      topP: 0.9, // specifies the top-p sampling parameter
+      model: "gpt-4o-mini",
+      apiKey: process.env.OPENAI_API_KEY,
     });
 
     let walletDataStr: string | null = null;
