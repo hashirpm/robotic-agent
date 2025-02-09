@@ -62,7 +62,7 @@ async fn sign_and_response_to_task(
     println!("Signing and responding to task : {:?}", task_index);
 
     let hello_world_contract_address: Address =
-        parse_hello_world_service_manager("contracts/deployments/hello-world/31337.json")?;
+        parse_hello_world_service_manager("contracts/deployments/robotic-agent/31337.json")?;
     let hello_world_contract = RoboticAgentServiceManager::new(hello_world_contract_address, &pr);
 
     let response_hash = hello_world_contract
@@ -90,7 +90,7 @@ async fn monitor_new_tasks() -> Result<()> {
     let pr = get_signer(&KEY.clone(), ANVIL_RPC_URL);
     let signer = PrivateKeySigner::from_str(&KEY.clone())?;
     let hello_world_contract_address: Address =
-        parse_hello_world_service_manager("contracts/deployments/hello-world/31337.json")?;
+        parse_hello_world_service_manager("contracts/deployments/robotic-agent/31337.json")?;
 
     let mut latest_processed_block = pr.get_block_number().await?;
 
@@ -187,7 +187,7 @@ async fn register_operator() -> Result<()> {
     let expiry: U256 = U256::from(now + 3600);
 
     let hello_world_contract_address: Address =
-        parse_hello_world_service_manager("contracts/deployments/hello-world/31337.json")?;
+        parse_hello_world_service_manager("contracts/deployments/robotic-agent/31337.json")?;
     let digest_hash = elcontracts_reader_instance
         .calculate_operator_avs_registration_digest_hash(
             signer.address(),
@@ -204,7 +204,7 @@ async fn register_operator() -> Result<()> {
         expiry: expiry,
     };
     let stake_registry_address: Address =
-        parse_stake_registry_address("contracts/deployments/hello-world/31337.json")?;
+        parse_stake_registry_address("contracts/deployments/robotic-agent/31337.json")?;
     let contract_ecdsa_stake_registry = ECDSAStakeRegistry::new(stake_registry_address, &pr);
     let registeroperator_details_call: alloy::contract::CallBuilder<
         _,
@@ -260,7 +260,7 @@ async fn create_new_task(task_name: &str) -> Result<()> {
     }
 
     let s = &format!(
-        "{}/contracts/deployments/hello-world/31337.json",
+        "{}/contracts/deployments/robotic-agent/31337.json",
         &path.display()
     );
     let parsed: RoboticAgentData =
@@ -368,7 +368,7 @@ mod tests {
         }
 
         let s = &format!(
-            "{}/contracts/deployments/hello-world/31337.json",
+            "{}/contracts/deployments/robotic-agent/31337.json",
             &path.display()
         );
         let data = std::fs::read_to_string(s).unwrap();

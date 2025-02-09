@@ -15,7 +15,7 @@ const wallet = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
 /// TODO: Hack
 let chainId = 31337;
 
-const avsDeploymentData = JSON.parse(fs.readFileSync(path.resolve(__dirname, `../contracts/deployments/hello-world/${chainId}.json`), 'utf8'));
+const avsDeploymentData = JSON.parse(fs.readFileSync(path.resolve(__dirname, `../contracts/deployments/robotic-agent/${chainId}.json`), 'utf8'));
 // Load core deployment data
 const coreDeploymentData = JSON.parse(fs.readFileSync(path.resolve(__dirname, `../contracts/deployments/core/${chainId}.json`), 'utf8'));
 
@@ -40,9 +40,8 @@ const ecdsaRegistryContract = new ethers.Contract(ecdsaStakeRegistryAddress, ecd
 const avsDirectory = new ethers.Contract(avsDirectoryAddress, avsDirectoryABI, wallet);
 
 
-const signAndRespondToTask = async (taskIndex: number, taskCreatedBlock: number, taskName: string) => {
-    const message = `Hello, ${taskName}`;
-    const messageHash = ethers.solidityPackedKeccak256(["string"], [message]);
+const signAndRespondToTask = async (taskIndex: number, taskCreatedBlock: number, username: string, score: string) => {
+    const messageHash = ethers.solidityPackedKeccak256(["string"], [score]);
     const messageBytes = ethers.getBytes(messageHash);
     const signature = await wallet.signMessage(messageBytes);
 
@@ -56,7 +55,8 @@ const signAndRespondToTask = async (taskIndex: number, taskCreatedBlock: number,
     );
 
     const tx = await roboticAgentServiceManager.respondToTask(
-        { name: taskName, taskCreatedBlock: taskCreatedBlock },
+        { username, taskCreatedBlock: taskCreatedBlock },
+        score,
         taskIndex,
         signedTask
     );
@@ -125,7 +125,8 @@ const monitorNewTasks = async () => {
 
     roboticAgentServiceManager.on("NewTaskCreated", async (taskIndex: number, task: any) => {
         console.log(`New task detected: Hello, ${task.name}`);
-        await signAndRespondToTask(taskIndex, task.taskCreatedBlock, task.name);
+
+        await signAndRespondToTask(taskIndex, task.taskCreatedBlock, task.name, "10");
     });
 
     console.log("Monitoring for new tasks...");

@@ -63,8 +63,8 @@ contract SetupPayments is Script, Test {
 
         coreDeployment = CoreDeploymentLib.readDeploymentJson("deployments/core/", block.chainid);
         coreConfig = CoreDeploymentLib.readDeploymentConfigValues("config/core/", block.chainid);
-        roboticAgentDeployment = RoboticAgentDeploymentLib.readDeploymentJson("deployments/hello-world/", block.chainid);
-        roboticAgentConfig = RoboticAgentDeploymentLib.readDeploymentConfigValues("config/hello-world/", block.chainid);
+        roboticAgentDeployment = RoboticAgentDeploymentLib.readDeploymentJson("deployments/robotic-agent/", block.chainid);
+        roboticAgentConfig = RoboticAgentDeploymentLib.readDeploymentConfigValues("config/robotic-agent/", block.chainid);
 
         rewardsCoordinator = RewardsCoordinator(coreDeployment.rewardsCoordinator);
 

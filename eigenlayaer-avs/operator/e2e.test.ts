@@ -23,7 +23,7 @@ async function loadJsonFile(filePath: string): Promise<any> {
 
 async function loadDeployments(): Promise<Record<string, any>> {
   const coreFilePath = path.join(__dirname, '..', 'contracts', 'deployments', 'core', '31337.json');
-  const roboticAgentFilePath = path.join(__dirname, '..', 'contracts', 'deployments', 'hello-world', '31337.json');
+  const roboticAgentFilePath = path.join(__dirname, '..', 'contracts', 'deployments', 'robotic-agent', '31337.json');
 
   const [coreDeployment, roboticAgentDeployment] = await Promise.all([
     loadJsonFile(coreFilePath),
@@ -55,7 +55,7 @@ describe('Operator Functionality', () => {
     anvil = createAnvil();
     await anvil.start();
     await execAsync('npm run deploy:core');
-    await execAsync('npm run deploy:hello-world');
+    await execAsync('npm run deploy:robotic-agent');
     deployment = await loadDeployments();
 
     provider = new ethers.JsonRpcProvider(process.env.RPC_URL);

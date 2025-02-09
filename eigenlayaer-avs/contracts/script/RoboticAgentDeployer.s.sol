@@ -42,7 +42,7 @@ contract RoboticAgentDeployer is Script, Test {
         deployer = vm.rememberKey(vm.envUint("PRIVATE_KEY"));
         vm.label(deployer, "Deployer");
 
-        roboticAgentConfig = RoboticAgentDeploymentLib.readDeploymentConfigValues("config/hello-world/", block.chainid);
+        roboticAgentConfig = RoboticAgentDeploymentLib.readDeploymentConfigValues("config/robotic-agent/", block.chainid);
 
 
         coreDeployment = CoreDeploymentLib.readDeploymentJson("deployments/core/", block.chainid);

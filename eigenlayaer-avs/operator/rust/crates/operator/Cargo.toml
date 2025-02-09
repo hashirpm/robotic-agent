@@ -1,5 +1,5 @@
 [package]
-name = "hello-world-avs-operator"
+name = "robotic-agent-avs-operator"
 description = "Hello world avs operator start and spam utilities"
 
 version.workspace = true
@@ -26,7 +26,7 @@ eigen-utils.workspace = true
 eigen-logging.workspace = true
 eigen-testing-utils.workspace = true
 
-hello-world-utils.workspace = true
+robotic-agent-utils.workspace = true
 
 #misc 
 dotenv = "0.15.0"

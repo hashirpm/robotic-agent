@@ -4,7 +4,7 @@ Welcome to the Hello World AVS. This project shows you the simplest functionalit
 
 ## Architecture
 
-![hello-world-png](./assets/hello-world-diagramv2.png)
+![robotic-agent-png](./assets/robotic-agent-diagramv2.png)
 
 ### AVS User Flow
 
@@ -72,7 +72,7 @@ npm run build
 npm run deploy:core
 
 # Deploy the Hello World AVS contracts
-npm run deploy:hello-world
+npm run deploy:robotic-agent
 
 # (Optional) Update ABIs
 npm run extract:abis
@@ -92,7 +92,7 @@ npm run start:anvil-quick
 npm run deploy:core
 
 # Deploy the Hello World AVS contracts
-npm run deploy:hello-world
+npm run deploy:robotic-agent
 
 ```
 
@@ -136,7 +136,7 @@ For help and support deploying and modifying this repo for your AVS, please:
 1. Open a ticket via the intercom link at [support.eigenlayer.xyz](https://support.eigenlayer.xyz).
 2. Include the necessary troubleshooting information for your environment:
   * Local anvil testing:
-    * Redeploy your local test using `--revert-strings debug` flag via the following commands and retest: `npm run deploy:core-debug && npm run deploy:hello-world-debug`
+    * Redeploy your local test using `--revert-strings debug` flag via the following commands and retest: `npm run deploy:core-debug && npm run deploy:robotic-agent-debug`
     * Include the full stacktrace from your error as a .txt file attachment.
     * Create a minimal repo that demonstrates the behavior (fork or otherwise)
     * Steps require to reproduce issue (compile and cause the error)

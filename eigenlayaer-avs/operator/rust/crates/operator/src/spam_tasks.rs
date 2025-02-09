@@ -34,7 +34,7 @@ fn generate_random_name() -> String {
 #[allow(unused)]
 /// Calls CreateNewTask function of the Hello world service manager contract
 async fn create_new_task(task_name: &str) -> Result<()> {
-    let data = std::fs::read_to_string("contracts/deployments/hello-world/31337.json")?;
+    let data = std::fs::read_to_string("contracts/deployments/robotic-agent/31337.json")?;
     let parsed: RoboticAgentData = serde_json::from_str(&data)?;
     let hello_world_contract_address: Address =
         parsed.addresses.hello_world_service_manager.parse()?;

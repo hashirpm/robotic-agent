@@ -99,7 +99,7 @@ library RoboticAgentDeploymentLib {
     function writeDeploymentJson(
         DeploymentData memory data
     ) internal {
-        writeDeploymentJson("deployments/hello-world/", block.chainid, data);
+        writeDeploymentJson("deployments/robotic-agent/", block.chainid, data);
     }
 
     function writeDeploymentJson(
