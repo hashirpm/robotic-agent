@@ -17,9 +17,8 @@ const roboticAgentServiceManagerABI = JSON.parse(fs.readFileSync(path.resolve(__
 const roboticAgentServiceManager = new ethers.Contract(roboticAgentServiceManagerAddress, roboticAgentServiceManagerABI, wallet);
 
 
-const USERNAME = "0xshiyasmohd";
 
-async function createNewTask(username: string) {
+export async function createNewTask(username: string) {
   try {
     // Send a transaction to the createNewTask function
     const tx = await roboticAgentServiceManager.createNewTask(username);
@@ -33,10 +32,10 @@ async function createNewTask(username: string) {
   }
 }
 
-// Function to create a new task with a random name every 15 seconds
-function startCreatingTasks() {
-  createNewTask(USERNAME);
-}
+// // Function to create a new task with a random name every 15 seconds
+// function startCreatingTasks() {
+//   createNewTask(USERNAME);
+// }
 
-// Start the process
-startCreatingTasks();
+// // Start the process
+// startCreatingTasks();

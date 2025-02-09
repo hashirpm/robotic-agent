@@ -35,7 +35,7 @@ const avsDirectoryABI = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../a
 
 // Initialize contract objects from ABIs
 const delegationManager = new ethers.Contract(delegationManagerAddress, delegationManagerABI, wallet);
-const roboticAgentServiceManager = new ethers.Contract(roboticAgentServiceManagerAddress, roboticAgentServiceManagerABI, wallet);
+export const roboticAgentServiceManager = new ethers.Contract(roboticAgentServiceManagerAddress, roboticAgentServiceManagerABI, wallet);
 const ecdsaRegistryContract = new ethers.Contract(ecdsaStakeRegistryAddress, ecdsaRegistryABI, wallet);
 const avsDirectory = new ethers.Contract(avsDirectoryAddress, avsDirectoryABI, wallet);
 

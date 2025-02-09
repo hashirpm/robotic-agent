@@ -17,6 +17,8 @@ import {
 } from "../nillion-helpers/race";
 import { generateSpeedScore } from "../agent-kit/speed-score";
 import { updateWinner } from "../agent-kit/robo-agent";
+import { createNewTask } from "../eigenlayer-avs/operator/createNewTasks";
+import { roboticAgentServiceManager } from "../eigenlayer-avs/operator";
 
 const GRAPH_NETWORK_QUERY_URL =
   "https://api.studio.thegraph.com/query/62284/robot-race/version/latest";
@@ -230,15 +232,31 @@ export async function fetchNewRaces() {
           const robot1Abilities = robot1Data.data.hiddenAbilities;
           const robot2BaseSpeed = robot2Data.data.baseSpeed;
           const robot2Abilities = robot2Data.data.hiddenAbilities;
-          // Update nillion secret vault with initial data
-          const offChainScoreRobot1 = await generateSpeedScore(
-            robot1.twitter,
-            robot1Abilities
-          );
-          const offChainScoreRobot2 = await generateSpeedScore(
-            robot2.twitter,
-            robot2Abilities
-          );
+          //Call AVS for offchain speed score computation
+          let offChainAVSScoreRobot1 = -1;
+          let offChainAVSScoreRobot2 = -1;
+          await createNewTask(robot1.twitter);
+          await createNewTask(robot2.twitter);
+          while (offChainAVSScoreRobot1 == -1 || offChainAVSScoreRobot2 == -1) {
+            roboticAgentServiceManager.on(
+              "TaskResponded",
+              async (
+                taskIndex: number,
+                task: any,
+                score: number,
+                operator: string
+              ) => {
+                console.log(
+                  `Task responded: Username - ${task.username}, Score - ${score}, Operator - ${operator}`
+                );
+                if (task.username == robot1.twitter) {
+                  offChainAVSScoreRobot1 = score;
+                } else if (task.username == robot2.twitter) {
+                  offChainAVSScoreRobot2 = score;
+                }
+              }
+            );
+          }
 
           await updateRaceLog(
             race.id,
@@ -248,8 +266,8 @@ export async function fetchNewRaces() {
             100,
             0,
             0,
-            Number(robot1BaseSpeed) + Number(offChainScoreRobot1),
-            Number(robot2BaseSpeed) + Number(offChainScoreRobot2)
+            Number(robot1BaseSpeed) + Number(offChainAVSScoreRobot1),
+            Number(robot2BaseSpeed) + Number(offChainAVSScoreRobot2)
           );
         });
 
@@ -281,12 +299,35 @@ export async function fetchNewRaces() {
             raceLog.data.sensitiveData.robot1Energy != 0 &&
             raceLog.data.sensitiveData.robot2Energy != 0
           ) {
-            const offChainScoreRobot1 = await generateSpeedScore(
-              robot1.twitter
-            );
-            const offChainScoreRobot2 = await generateSpeedScore(
-              robot2.twitter
-            );
+            //Call AVS
+            let offChainAVSScoreRobot1 = -1;
+            let offChainAVSScoreRobot2 = -1;
+            await createNewTask(robot1.twitter);
+            await createNewTask(robot2.twitter);
+            while (
+              offChainAVSScoreRobot1 == -1 ||
+              offChainAVSScoreRobot2 == -1
+            ) {
+              roboticAgentServiceManager.on(
+                "TaskResponded",
+                async (
+                  taskIndex: number,
+                  task: any,
+                  score: number,
+                  operator: string
+                ) => {
+                  console.log(
+                    `Task responded: Username - ${task.username}, Score - ${score}, Operator - ${operator}`
+                  );
+                  if (task.username == robot1.twitter) {
+                    offChainAVSScoreRobot1 = score;
+                  } else if (task.username == robot2.twitter) {
+                    offChainAVSScoreRobot2 = score;
+                  }
+                }
+              );
+            }
+
             const robot1UpdatedEnergy = Math.max(
               0,
               Math.min(100, Number(raceLog.data.sensitiveData.robot1Energy), -1)
@@ -320,9 +361,9 @@ export async function fetchNewRaces() {
               robot1UpdatedPosition,
               robot2UpdatedPosition,
               Number(raceLog.data.sensitiveData.robot1Speed) +
-                Number(offChainScoreRobot1),
+                Number(offChainAVSScoreRobot1),
               Number(raceLog.data.sensitiveData.robot2Speed) +
-                Number(offChainScoreRobot2)
+                Number(offChainAVSScoreRobot2)
             );
             if (
               raceLog.data.sensitiveData.robot1Energy < tweetEnergy &&
