@@ -40,8 +40,8 @@ const ecdsaRegistryContract = new ethers.Contract(ecdsaStakeRegistryAddress, ecd
 const avsDirectory = new ethers.Contract(avsDirectoryAddress, avsDirectoryABI, wallet);
 
 
-const signAndRespondToTask = async (taskIndex: number, taskCreatedBlock: number, username: string, score: string) => {
-    const messageHash = ethers.solidityPackedKeccak256(["string"], [score]);
+const signAndRespondToTask = async (taskIndex: number, taskCreatedBlock: number, username: string, score: number) => {
+    const messageHash = ethers.solidityPackedKeccak256(["uint32"], [score]);
     const messageBytes = ethers.getBytes(messageHash);
     const signature = await wallet.signMessage(messageBytes);
 
@@ -124,9 +124,9 @@ const monitorNewTasks = async () => {
     //await roboticAgentServiceManager.createNewTask("EigenWorld");
 
     roboticAgentServiceManager.on("NewTaskCreated", async (taskIndex: number, task: any) => {
-        console.log(`New task detected: Hello, ${task.name}`);
+        console.log(`New task detected: Username - , ${task.username}`);
 
-        await signAndRespondToTask(taskIndex, task.taskCreatedBlock, task.name, "10");
+        await signAndRespondToTask(taskIndex, task.taskCreatedBlock, task.username, 10);
     });
 
     console.log("Monitoring for new tasks...");
